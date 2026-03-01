@@ -1,0 +1,54 @@
+plugins {
+    id 'java'
+    id 'application'
+
+    // JavaFX plugin (Note: You can safely remove this if you only use Angular for the frontend)
+    id 'org.openjfx.javafxplugin' version '0.1.0'
+
+    // --- Spring Boot Plugins ---
+    // Adds Spring Boot support to build, run, and package the application
+    id 'org.springframework.boot' version '3.2.3'
+    // Automatically manages the versions of Spring dependencies so you don't have to specify them manually
+    id 'io.spring.dependency-management' version '1.1.4'
+}
+
+group = 'org.example'
+version = '1.0-SNAPSHOT'
+
+// Source of plugins
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // --- Spring Boot Dependencies ---
+
+    // Provides tools to build web applications and REST APIs (includes Tomcat embedded server)
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    // Provides tools to interact with relational databases using JPA and Hibernate
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    // Provides a fast, zero-configuration in-memory database (perfect for hackathons)
+    runtimeOnly 'com.h2database:h2'
+
+    // --- Testing Dependencies ---
+
+    // Defines the exact versions of JUnit 5 modules to ensure compatibility
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+
+    // Provides the core API for writing and executing unit tests in JUnit 5
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+
+    // Provides powerful testing utilities specifically for Spring Boot applications
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+javafx {
+    version = "25.0.2"
+    modules = [ 'javafx.controls' ]
+}
+
+test {
+    useJUnitPlatform()
+}
