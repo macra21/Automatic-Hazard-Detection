@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <!-- Database connection settings -->
+        <property name="connection.driver_class">org.postgresql.Driver</property>
+
+        <property name="connection.url">jdbc:postgresql://localhost:5432/AHDDB</property>
+        <property name="connection.username">postgres</property>
+        <property name="connection.password">1234</property>
+
+        <!-- Maximum 1 connection to the DB per instance of application
+            Basically, Hibernate, reuses the same connection for every query,
+            even when the query is done. This is better for resources. This pattern
+            is names Session per Request.-->
+        <property name="connection.pool_size">1</property>
+
+        <!-- The type of SQL language is used (In this case Postgresql) -->
+        <property name="dialect">org.hibernate.dialect.PostgreSQLDialect</property>
+
+        <!-- For debugging -->
+        <property name="show_sql">true</property>
+
+        <!-- Creates or updates tables on startup of the application -->
+        <property name="hbm2ddl.auto">update</property>
+
+        <!-- Used classes int the DB -->
+        <mapping class="Domain.User"/>
+        <mapping class="Domain.Hazard"/>
+    </session-factory>
+</hibernate-configuration>
