@@ -1,22 +1,43 @@
 package Domain;
 
+import jakarta.persistence.*;
 /**
  * Represents the User entity within the application domain.
  * Includes basic information such as a unique identifier,
  * email, password, username and {@link UserType}.
  */
+@Entity
+@Table(name = "Users")
 public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer ID;
+
+    @Column(nullable = false, unique = true)
     private String email;
+
+    @Column(nullable = false)
     private String password;
+
+    @Column(nullable = false, unique = true)
     private String username;
+
+    @Enumerated(EnumType.STRING)
     private UserType type;
+
+    /**
+     * Constructor without arguments required by Hibernate.
+     */
+    public User(){}
 
     /**
      * Constructs a fully initialized User object.
      * <p>
      *     This constructor is typically used when the user is retrieved from
      *     the database and already has an assigned identifier.
+     * </p>
+     * <p>
+     *     <b>Note:</b> This constructor was implemented for JDBC compatibility and is preserved for that purpose.
      * </p>
      * @param ID the unique identifier of the user
      * @param email the email of the user
@@ -38,6 +59,9 @@ public class User {
      *     This constructor is typically used before the user is added to
      *     the database and has no ID. The database will automatically assign
      *     an ID to the hazard if there are no errors.
+     * </p>
+     * <p>
+     *     <b>Note:</b> This constructor was implemented for JDBC compatibility and is preserved for that purpose.
      * </p>
      * @param email the email of the user
      * @param password the password of the user
