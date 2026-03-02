@@ -1,0 +1,34 @@
+1. Sincronizare(descarcare ultima versiune):
+    git checkout main
+    git pull origin main
+
+2. Branch nou:
+    git checkout -b feature/description
+
+3. Iti scrii codul de geek si ii dai commit
+    git add .
+    git commit -m "feat:descriere la ce ai lucrat"
+
+4. Push
+    git push origin feature/description
+
+5. Intri pe repo pe gihub si faci un pull request pt merge(intre main si branch-ul vostru)
+
+ATENTIE:
+    Puteti repeta pasii 3 si 4 pe branch-ul vostru tot timpul cand vreti sa salvati ce ati lucrat. Pull request doar la final
+    Sa va uitati la pull request-uri si sa lasati comentarii daca cv nu e ok. Nu dati APPROVE pana nu au lasat toti comentariu ca e ok codul
+    Sa lucrati pe branch nou ca sa nu futem main-ul
+
+Nume standard branch-uri:
+    feature/descriereScurta   // pentru functionalitati noi
+    bugfix/descriereScurta    // pentru fix-uri la erori
+    chore/descriereScurta     // pentru configurari, mentenanta, dependente, etc.
+    refactor/descriereScurta  // refactor la cod(fara sa schimbi functionalitatea
+
+Tipuri mesaje commit:
+    feat:descriere            // functionalitate nou
+    fix:descriere             // bug fix
+    docs:descriere            // adaugare/modificare documentatie
+    style:descriere           // formatare cod(spatiere, tab-uri, etc); nu afecteaza logica
+    refactor:descriere        // modificare cod fara sa schimbi functionalitatea
+    test:descriere            // adaugare/modificare teste

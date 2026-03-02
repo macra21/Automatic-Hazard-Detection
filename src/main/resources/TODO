@@ -4,7 +4,8 @@ TODO:
         - CHECKED_HAZARD -> CLEARED
     * Tabela pentru Hazard si ResponseTime (1-n)
     * In tabela ResponseTime se da insert cand se da update la Hazard de la un status la altul(poate un trigger pt simplitate)
-
+    * Folosim hibernate cu springboot pt repo??? sau facem clasic si scriem cod manual
+    
 DONE:
     * Add Spring plugin and dependencies.
     * Install NodeJS and configure Angular
