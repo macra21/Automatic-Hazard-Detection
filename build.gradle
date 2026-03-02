@@ -42,6 +42,8 @@ dependencies {
 
     // Provides powerful testing utilities specifically for Spring Boot applications
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    implementation 'org.postgresql:postgresql:42.7.2'
 }
 
 javafx {
