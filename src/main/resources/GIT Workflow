@@ -33,7 +33,7 @@ Nume standard branch-uri:
     refactor/descriereScurta  // refactor la cod(fara sa schimbi functionalitatea
 
 Tipuri mesaje commit:
-    feat:descriere            // functionalitate nou
+    feat:descriere            // functionalitate noua
     fix:descriere             // bug fix
     docs:descriere            // adaugare/modificare documentatie
     style:descriere           // formatare cod(spatiere, tab-uri, etc); nu afecteaza logica
