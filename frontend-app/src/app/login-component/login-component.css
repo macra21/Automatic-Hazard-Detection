@@ -1,0 +1,102 @@
+/* login.component.css */
+
+:host {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  /* Fundal sobru, industrial - nuanțe de albastru închis/gri */
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  z-index: 9999;
+}
+
+form {
+  /* Design solid, eliminăm "glassmorphism" pentru un aspect tehnic și clar */
+  background: #ffffff;
+  padding: 40px 35px;
+  border-radius: 8px; /* Margini mai puțin rotunjite (look structurat) */
+  width: 100%;
+  max-width: 380px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+  text-align: center;
+}
+
+h1 {
+  color: #0f172a; /* Text închis, contrast puternic */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-weight: 700;
+  font-size: 1.8rem;
+  margin-bottom: 30px;
+  letter-spacing: -0.01em;
+}
+
+.form-control {
+  margin-bottom: 20px;
+  text-align: left; /* Aliniem la stânga pentru o citire mai naturală a datelor */
+}
+
+.form-control input {
+  width: 100%;
+  padding: 14px 16px;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  color: #1e293b;
+  outline: none;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+  font-family: "Inter", -apple-system, system-ui, sans-serif;
+  font-size: 16px; /* Dimensiune optimă pentru interfețe utilitare/mobile */
+}
+
+.form-control input::placeholder {
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+.form-control input:focus {
+  background: #ffffff;
+  border-color: #0284c7; /* Albastru "Aviation/Safety" la focus */
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15); /* Inel de focus accesibil */
+}
+
+button {
+  width: 100%;
+  padding: 14px;
+  background: #0284c7; /* Buton primar, vizibil și de încredere */
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-family: -apple-system, sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 15px;
+  transition: background-color 0.2s ease;
+}
+
+button:hover {
+  background: #0369a1; /* Nuanță mai închisă la interacțiune */
+}
+
+button:active {
+  background: #075985;
+}
+.form-control label {
+  display: block;
+  margin-bottom: 8px;
+  color: #475569; /* Un gri-albastru care nu obosește ochiul */
+
+  /* Fontul tehnic și curat solicitat */
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 14px;
+  font-weight: 600; /* Îngroșat pentru a fi ușor de citit dintr-o privire */
+
+  letter-spacing: 0.02em; /* Puțin spațiu între litere pentru un look premium */
+  text-transform: none; /* Păstrăm scrierea normală pentru claritate */
+}
