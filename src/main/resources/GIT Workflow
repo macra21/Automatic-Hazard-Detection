@@ -22,7 +22,7 @@
 
 
 ATENTIE:
-    Puteti repeta pasii 3 si 4 pe branch-ul vostru tot timpul cand vreti sa salvati ce ati lucrat. Pull request doar la final
+    Puteti repeta pasii 3 si 4 pe branch-ul vostru tot timpul cand vreti sa salvati ce ati lucrat(local). Pull request doar la final
     Sa va uitati la pull request-uri si sa lasati comentarii daca cv nu e ok. Nu dati APPROVE pana nu au lasat toti comentariu ca e ok codul
     Sa lucrati pe branch nou ca sa nu futem main-ul
 
