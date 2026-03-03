@@ -1,15 +1,15 @@
-package Repository;
+package org.example.ahd.repository;
 
-import Domain.Hazard;
-import Domain.HazardStatus;
-import Exceptions.DatabaseException;
-import Utils.HibernateUtil;
+import org.example.ahd.domain.Hazard;
+import org.example.ahd.domain.HazardStatus;
+import org.example.ahd.exceptions.DatabaseException;
+import org.example.ahd.utils.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import java.util.List;
 
 /**
- * Repository implementation for the {@link Hazard} entity.
+ * org.example.ahd.AbstractRepository implementation for the {@link Hazard} entity.
  * <p>
  *     Extends the {@link AbstractRepository} to provide standard CRUD operations
  *     and adds specific methods for querying hazards.

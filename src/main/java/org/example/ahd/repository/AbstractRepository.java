@@ -1,7 +1,7 @@
-package Repository;
+package org.example.ahd.repository;
 
-import Exceptions.DatabaseException;
-import Utils.HibernateUtil;
+import org.example.ahd.exceptions.DatabaseException;
+import org.example.ahd.utils.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import java.util.List;

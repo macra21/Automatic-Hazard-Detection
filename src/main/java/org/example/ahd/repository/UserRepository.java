@@ -1,13 +1,13 @@
-package Repository;
+package org.example.ahd.repository;
 
-import Domain.User;
-import Exceptions.DatabaseException;
-import Utils.HibernateUtil;
+import org.example.ahd.domain.User;
+import org.example.ahd.exceptions.DatabaseException;
+import org.example.ahd.utils.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 
 /**
- * Repository implementation for the {@link User} entity.
+ * org.example.ahd.AbstractRepository implementation for the {@link User} entity.
  * <p>
  *     Extends the {@link AbstractRepository} to provide standard CRUD operations
  *     and adds specific methods for querying users by email or username.
