@@ -25,10 +25,10 @@ public interface IRepository<T, ID> {
     void update(T entity);
 
     /**
-     * Removes an entity from the repository.
-     * @param entity the entity to be removed
+     * Removes an entity from the repository by its unique identifier.
+     * @param id the ID of the entity to be removed
      */
-    void delete(T entity);
+    void deleteById(ID id);
 
     /**
      * Retrieves an entity by its unique identifier.

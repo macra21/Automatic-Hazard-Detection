@@ -18,6 +18,8 @@
     git checkout main     // te muti pe main ca altfel nu il poti sterge
     git pull origin main  // te asiguri ca esti la ultima versiune din main
     git branch -d feature/description //stergi branch-ul local
+
+    nu fa asta:
     git push origin --delete feature/description // stergi brach-ul de pe github
 
 
