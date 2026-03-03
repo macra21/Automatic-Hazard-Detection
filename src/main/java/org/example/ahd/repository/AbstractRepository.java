@@ -85,15 +85,20 @@ public abstract class AbstractRepository<T, ID> implements IRepository<T, ID> {
      *     deletes the entity, and commits the transaction. If an error occurs,
      *     the transaction is rolled back.
      * </p>
-     * @param entity the entity to be removed
+     * @param id the ID of the entity to be removed
      * @throws DatabaseException if the operation fails
      */
     @Override
-    public void delete(T entity) {
+    public void deleteById(ID id) {
         Transaction transaction = null;
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
-            session.remove(entity);
+
+            // Creates a dummy entity that has the correct ID, but all the other fields are null
+            T entityProxy = session.getReference(entityClass, id);
+
+            session.remove(entityProxy);
+
             transaction.commit();
         } catch (Exception e) {
             if (transaction != null) {

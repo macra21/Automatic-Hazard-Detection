@@ -27,7 +27,6 @@ public class UserRepository extends AbstractRepository<User, Integer> {
      * Finds a user by their email address.
      * <p>
      *     This method executes an HQL query to find a user with the specified email.
-     *     It assumes that email addresses are unique.
      * </p>
      * @param email the email address to search for
      * @return the {@link User} with the specified email, or null if not found
@@ -47,7 +46,6 @@ public class UserRepository extends AbstractRepository<User, Integer> {
      * Finds a user by their username.
      * <p>
      *     This method executes an HQL query to find a user with the specified username.
-     *     It assumes that usernames are unique.
      * </p>
      * @param username the username to search for
      * @return the {@link User} with the specified username, or null if not found
@@ -57,6 +55,27 @@ public class UserRepository extends AbstractRepository<User, Integer> {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Query<User> query = session.createQuery("FROM User WHERE username = :username", User.class);
             query.setParameter("username", username);
+            return query.uniqueResult();
+        } catch (Exception e) {
+            throw new DatabaseException(e.getMessage());
+        }
+    }
+
+    /**
+     * Finds a user by their email and password.
+     * <p>
+     *     This method executes an HQL query to find a user with the specified email and password.
+     * </p>
+     * @param email the email to search for
+     * @param password the hashed password to search for
+     * @return the {@link User} with the specified username, or null if not found
+     * @throws DatabaseException if the operation fails
+     */
+    public User findByMailAndPassword(String email, String password) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Query<User> query = session.createQuery("FROM User WHERE email = :email and password = :password", User.class);
+            query.setParameter("email", email);
+            query.setParameter("password", password);
             return query.uniqueResult();
         } catch (Exception e) {
             throw new DatabaseException(e.getMessage());
