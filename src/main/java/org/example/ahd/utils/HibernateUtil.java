@@ -1,6 +1,6 @@
-package Utils;
+package org.example.ahd.utils;
 
-import Exceptions.DatabaseException;
+import org.example.ahd.exceptions.DatabaseException;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 

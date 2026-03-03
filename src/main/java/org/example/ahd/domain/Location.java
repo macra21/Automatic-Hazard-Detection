@@ -1,4 +1,4 @@
-package Domain;
+package org.example.ahd.domain;
 
 import jakarta.persistence.Embeddable;
 

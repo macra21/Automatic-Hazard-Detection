@@ -1,4 +1,4 @@
-package Exceptions;
+package org.example.ahd.exceptions;
 
 /**
  * Custom exception for database-related errors.

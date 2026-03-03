@@ -1,4 +1,4 @@
-package Repository;
+package org.example.ahd.repository;
 
 import java.util.List;
 
