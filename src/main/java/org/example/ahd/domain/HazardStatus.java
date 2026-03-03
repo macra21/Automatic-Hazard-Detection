@@ -1,4 +1,4 @@
-package Domain;
+package org.example.ahd.domain;
 
 /**
  * Helper enum class that contains the status of the {@link Hazard}.

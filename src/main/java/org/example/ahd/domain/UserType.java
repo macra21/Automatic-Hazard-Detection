@@ -1,4 +1,4 @@
-package Domain;
+package org.example.ahd.domain;
 
 /**
  * Helper enum class that contains the user type of the {@link User}.

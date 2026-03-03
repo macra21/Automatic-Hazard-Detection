@@ -1,4 +1,6 @@
-package Domain;
+package org.example.ahd.domain;
+
+import jakarta.persistence.MappedSuperclass;
 
 /**
  * Helper class for coordinates management.
@@ -7,9 +9,15 @@ package Domain;
  *     Designed to be used within the {@link Location} class.
  * </p>
  */
+@MappedSuperclass // It's parameters will be used by the child class(Location)
 public class Coordinates {
     private Double latitude;
     private Double longitude;
+
+    /**
+     * Constructor without arguments required by Hibernate.
+     */
+    public Coordinates() {}
 
     /**
      * Construct a fully initialized Coordinates object.

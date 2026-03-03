@@ -1,4 +1,6 @@
-package Domain;
+package org.example.ahd.domain;
+
+import jakarta.persistence.Embeddable;
 
 /**
  * Helper class to help with positioning information of a {@link Hazard}.
@@ -9,11 +11,17 @@ package Domain;
  *     rectangle that contains the hazard in a photo.
  * </p>
  */
+@Embeddable // Embedded class in Hazard
 public class Location extends Coordinates {
     private static final Double height = 15.0; // Pre established height of the drone's flight
     private Double width;
     private Double length;
     private Double pixelTopLeft;
+
+    /**
+     * Constructor without arguments required by Hibernate.
+     */
+    public Location() {}
 
     /**
      * Constructs a fully initialized location for a {@link Hazard}.
