@@ -65,7 +65,7 @@
 #map {
   width: 70%; /* Momentan ocupă 100% din spațiu. Când adaugi panourile, o facem 70% */
   height: 100%;
-  border-radius: 12px; /* Colțuri rotunjite, la fel ca la cutia albă de login */
+  border-radius: 20px; /* Colțuri rotunjite, la fel ca la cutia albă de login */
   overflow: hidden; /* Tăiem marginile hărții ca să respecte colțurile rotunjite */
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3); /* O umbră serioasă pentru efect de adâncime */
   border: 2px solid #2a354d; /* Un chenar fin pentru a o delimita pe fundalul dark */
