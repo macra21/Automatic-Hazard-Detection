@@ -76,7 +76,7 @@ public class HazardService {
      * @return the hazard if found or null if not found
      * @throws org.example.ahd.exceptions.DatabaseException if the database operation fails
      */
-    @Transactional
+    @Transactional(readOnly = true)
     public Hazard findHazardById(Integer ID) {
         return hazardRepository.findById(ID);
     }
@@ -90,7 +90,7 @@ public class HazardService {
      * @return a list of all the hazards
      * @throws org.example.ahd.exceptions.DatabaseException if the database operation fails
      */
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Hazard> getAllHazards() {
         return hazardRepository.getAll();
     }
@@ -101,7 +101,7 @@ public class HazardService {
      * @return the list of hazards
      * @throws org.example.ahd.exceptions.DatabaseException if the database operation fails
      */
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Hazard> findHazardsByStatus(HazardStatus status) {
         return hazardRepository.findByStatus(status);
     }
@@ -112,7 +112,7 @@ public class HazardService {
      * @return the list of hazards
      * @throws org.example.ahd.exceptions.DatabaseException if the database operation fails
      */
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Hazard> findHazardsByATCUserId(Integer userId) {
         return hazardRepository.findByAtcUser(userId);
     }
@@ -123,7 +123,7 @@ public class HazardService {
      * @return the list of hazards
      * @throws org.example.ahd.exceptions.DatabaseException if the database operation fails
      */
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Hazard> findHazardsByCleanupUserId(Integer userId) {
         return hazardRepository.findByCleanupUser(userId);
     }

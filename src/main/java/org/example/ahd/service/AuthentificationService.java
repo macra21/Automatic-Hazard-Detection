@@ -17,7 +17,7 @@ public class AuthentificationService {
         this.userValidator = userValidator;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public User login(String email, String password) {
         return userRepository.findByMailAndPassword(email, password);
     }
@@ -28,5 +28,11 @@ public class AuthentificationService {
         String hashedPassword = Encryption.SHA256OneWayHash(user.getPassword());
         user.setPassword(hashedPassword);
         userRepository.add(user);
+    }
+
+    @Transactional
+    public void deleteAccount(String email, String password){
+        User user = userRepository.findByMailAndPassword(email, password);
+        userRepository.deleteById(user.getID());
     }
 }
