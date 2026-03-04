@@ -1,12 +1,20 @@
 package org.example.ahd.controller;
 
 import org.example.ahd.domain.Hazard;
-import org.example.ahd.domain.User;
+import org.example.ahd.dto.HazardDetectionRequest;
 import org.example.ahd.exceptions.ValidationException;
 import org.example.ahd.service.HazardService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.image.BufferedImage;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * REST Controller for handling hazard updates.
@@ -17,7 +25,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/api/hazards")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "*")
 public class HazardController {
     private final HazardService hazardService;
 
@@ -47,6 +55,20 @@ public class HazardController {
         }
         catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred during hazard update: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/detect")
+    public ResponseEntity<?> detectHazard(@ModelAttribute HazardDetectionRequest detectionRequest){
+        try{
+            System.out.println("Label:" + detectionRequest.getLabel());
+            System.out.println("Confidence: " + detectionRequest.getConfidence());
+            System.out.println("Coords:" + detectionRequest.getCoord_x() + " " + detectionRequest.getCoord_y());
+            // Do something with this🙎🏿‍♂️
+            return ResponseEntity.ok("Hazard received successfully");
+        } catch (Exception e){
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred during hazard detection: " + e.getMessage());
         }
     }
 }
