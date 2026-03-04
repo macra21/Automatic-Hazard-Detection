@@ -3,6 +3,7 @@ package org.example.ahd.validators;
 import org.example.ahd.domain.Hazard;
 import org.example.ahd.domain.HazardStatus;
 import org.example.ahd.exceptions.ValidationException;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
  * Validator class for the {@link Hazard} entity.
  * Implements the {@link IValidator} interface.
  */
+@Component
 public class HazardValidator implements IValidator<Hazard>{
     /**
      * Validates an {@link Hazard} entity.

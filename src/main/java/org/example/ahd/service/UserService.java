@@ -3,6 +3,8 @@ package org.example.ahd.service;
 import org.example.ahd.domain.User;
 import org.example.ahd.repository.UserRepository;
 import org.example.ahd.validators.IValidator;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -15,6 +17,7 @@ import java.util.List;
  * more complex functionalities.
  * </p>
  */
+@Service
 public class UserService {
     private final UserRepository userRepository;
     private final IValidator<User> userValidator;
@@ -37,6 +40,7 @@ public class UserService {
      * @throws org.example.ahd.exceptions.ValidationException if the User is invalid
      * @throws org.example.ahd.exceptions.DatabaseException if the database throws an error(e.g. the user is already in the database, etc.)
      */
+    @Transactional
     public void addUser(User user) {
         userValidator.validate(user);
         userRepository.add(user);
@@ -49,6 +53,7 @@ public class UserService {
      * @throws org.example.ahd.exceptions.ValidationException if the User is invalid
      * @throws org.example.ahd.exceptions.DatabaseException if the database operation fails(e.g. the user does not have a unique username/email, etc.)
      */
+    @Transactional
     public void updateUser(User user) {
         userValidator.validate(user);
         userRepository.update(user);
@@ -60,6 +65,7 @@ public class UserService {
      * @param ID the id of the user to be deleted in the database
      * @throws org.example.ahd.exceptions.DatabaseException if the database operation fails(e.g. the user was not found, etc.)
      */
+    @Transactional
     public void deleteUser(Integer ID) {
         userRepository.deleteById(ID);
     }
@@ -71,6 +77,7 @@ public class UserService {
      * @return the user if found or null if not found
      * @throws org.example.ahd.exceptions.DatabaseException if the database operation fails
      */
+    @Transactional
     public User findUserById(Integer ID) {
         return userRepository.findById(ID);
     }
@@ -84,6 +91,7 @@ public class UserService {
      * @return a list of all the users
      * @throws org.example.ahd.exceptions.DatabaseException if the database operation fails
      */
+    @Transactional
     public List<User> getAllUsers() {
         return userRepository.getAll();
     }
@@ -95,6 +103,7 @@ public class UserService {
      * @return the user if found or null if not found
      * @throws org.example.ahd.exceptions.DatabaseException if the database operation fails
      */
+    @Transactional
     public User findUserByEmailAndPassword(String email, String password) {
         return userRepository.findByMailAndPassword(email, password);
     }
@@ -105,6 +114,7 @@ public class UserService {
      * @return the user if found or null if not found
      * @throws org.example.ahd.exceptions.DatabaseException if the database operation fails
      */
+    @Transactional
     public User findUserByEmail(String email) {
         return userRepository.findByEmail(email);
     }
@@ -115,6 +125,7 @@ public class UserService {
      * @return the user if found or null if not found
      * @throws org.example.ahd.exceptions.DatabaseException if the database operation fails
      */
+    @Transactional
     public User findUserByUsername(String username) {
         return userRepository.findByUsername(username);
     }

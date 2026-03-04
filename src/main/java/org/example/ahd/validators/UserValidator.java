@@ -3,11 +3,13 @@ package org.example.ahd.validators;
 import org.example.ahd.domain.User;
 import org.example.ahd.domain.UserType;
 import org.example.ahd.exceptions.ValidationException;
+import org.springframework.stereotype.Component;
 
 /**
  * Validator class for the {@link User} entity.
  * Implements the {@link IValidator} interface.
  */
+@Component
 public class UserValidator implements IValidator<User>{
     /**
      * Validates an {@link User} entity.
