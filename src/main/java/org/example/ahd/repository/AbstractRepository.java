@@ -1,23 +1,27 @@
 package org.example.ahd.repository;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.example.ahd.exceptions.DatabaseException;
-import org.example.ahd.utils.HibernateUtil;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
+import org.springframework.stereotype.Repository;
+
 import java.util.List;
 
 /**
- * Abstract implementation of the {@link IRepository} interface using Hibernate.
+ * Abstract implementation of the {@link IRepository} interface using JPA EntityManager.
  * <p>
  *     This class provides the core implementation for CRUD operations using the
- *     Hibernate {@link Session} and {@link Transaction} management.
- *     It handles the boilerplate code for opening sessions, managing transactions,
- *     and closing resources.
+ *     standard JPA {@link EntityManager}. Transaction management is handled by Spring's @Transactional.
  * </p>
  * @param <T> the type of the entity
  * @param <ID> the type of the entity's identifier
  */
+@Repository
 public abstract class AbstractRepository<T, ID> implements IRepository<T, ID> {
+    
+    @PersistenceContext
+    protected EntityManager entityManager;
+    
     private final Class<T> entityClass;
 
     /**
@@ -30,99 +34,59 @@ public abstract class AbstractRepository<T, ID> implements IRepository<T, ID> {
 
     /**
      * Adds a new entity to the database.
-     * <p>
-     *     This method opens a new Hibernate session, begins a transaction,
-     *     saves the entity, and commits the transaction. If an error occurs,
-     *     the transaction is rolled back.
-     * </p>
      * @param entity the entity to be added
      * @throws DatabaseException if the operation fails
      */
     @Override
     public void add(T entity) {
-        Transaction transaction = null;
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            transaction = session.beginTransaction();
-            session.persist(entity);
-            transaction.commit();
+        try {
+            entityManager.persist(entity);
         } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
-            }
             throw new DatabaseException(e.getMessage());
         }
     }
 
     /**
      * Updates an existing entity in the database.
-     * <p>
-     *     This method opens a new Hibernate session, begins a transaction,
-     *     updates the entity, and commits the transaction. If an error occurs,
-     *     the transaction is rolled back.
-     * </p>
      * @param entity the entity with updated information
      * @throws DatabaseException if the operation fails
      */
     @Override
     public void update(T entity) {
-        Transaction transaction = null;
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            transaction = session.beginTransaction();
-            session.merge(entity);
-            transaction.commit();
+        try {
+            entityManager.merge(entity);
         } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
-            }
             throw new DatabaseException(e.getMessage());
         }
     }
 
     /**
      * Removes an entity from the database.
-     * <p>
-     *     This method opens a new Hibernate session, begins a transaction,
-     *     deletes the entity, and commits the transaction. If an error occurs,
-     *     the transaction is rolled back.
-     * </p>
      * @param id the ID of the entity to be removed
      * @throws DatabaseException if the operation fails
      */
     @Override
     public void deleteById(ID id) {
-        Transaction transaction = null;
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            transaction = session.beginTransaction();
-
-            // Creates a dummy entity that has the correct ID, but all the other fields are null
-            T entityProxy = session.getReference(entityClass, id);
-
-            session.remove(entityProxy);
-
-            transaction.commit();
-        } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
+        try {
+            T entity = entityManager.find(entityClass, id);
+            if (entity != null) {
+                entityManager.remove(entity);
             }
+        } catch (Exception e) {
             throw new DatabaseException(e.getMessage());
         }
     }
 
     /**
      * Retrieves an entity by its unique identifier.
-     * <p>
-     *     This method opens a new Hibernate session and retrieves the entity
-     * </p>
      * @param id the unique identifier of the entity
      * @return the entity if found, or null if not found
      * @throws DatabaseException if the operation fails
      */
     @Override
     public T findById(ID id) {
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            // Cool info: Hibernate looks for the object in cache and only if
-            // it does not find it, it will execute the query
-            return session.get(entityClass, id);
+        try {
+            return entityManager.find(entityClass, id);
         } catch (Exception e) {
             throw new DatabaseException(e.getMessage());
         }
@@ -130,18 +94,13 @@ public abstract class AbstractRepository<T, ID> implements IRepository<T, ID> {
 
     /**
      * Retrieves all entities of type T from the database.
-     * <p>
-     *     This method opens a new Hibernate session and executes an HQL query
-     *     to select all records from the entity's table.
-     * </p>
      * @return a list containing all entities found
      * @throws DatabaseException if the operation fails
      */
     @Override
     public List<T> getAll() {
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            // e.g. "from User" in Hibernate translates to the following sql code: "SELECT * FROM Users"
-            return session.createQuery("from " + entityClass.getName(), entityClass).list();
+        try {
+            return entityManager.createQuery("from " + entityClass.getName(), entityClass).getResultList();
         } catch (Exception e) {
             throw new DatabaseException(e.getMessage());
         }
