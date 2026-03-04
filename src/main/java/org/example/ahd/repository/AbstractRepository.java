@@ -11,7 +11,7 @@ import java.util.List;
  * Abstract implementation of the {@link IRepository} interface using JPA EntityManager.
  * <p>
  *     This class provides the core implementation for CRUD operations using the
- *     standard JPA {@link EntityManager}. Transaction management is handled by Spring's @Transactional.
+ *     standard JPA {@link EntityManager}. Transaction management is handled by Spring's {@code @Transactional}.
  * </p>
  * @param <T> the type of the entity
  * @param <ID> the type of the entity's identifier
