@@ -1,15 +1,18 @@
 import { Routes } from '@angular/router';
-import {LoginComponent} from './login-component/login-component';
-import {MapComponent} from './map/map.component'
+import {Login} from './login-component/login';
+import {Map} from './map/map'
+import {Page} from './page/page';
+import { Dashboard } from './dashboard/dashboard';
+
 export const routes: Routes = [
   {
     path: '',
-    component: LoginComponent,
+    component: Login,
     pathMatch: 'full' // Recomandat pentru ruta principală
   },
   {
-    path: 'map',
-    component: MapComponent
-  }
+    path: 'page',
+    component: Page
+  },
   // Altele...
 ];

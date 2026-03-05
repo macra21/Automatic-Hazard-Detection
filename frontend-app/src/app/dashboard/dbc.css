@@ -1,0 +1,139 @@
+/* Stilurile pentru containerul gazdă */
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* Adăugăm padding aici pentru a crea spațiul exterior (ca la hartă) */
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.dashboard-panel {
+  background-color: #ffffff;
+  /* Rotunjire identică sau similară cu containerul hărții */
+  border-radius: 20px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  /* Border subtil pentru definiție */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  /* Umbră pentru efectul de profunzime (plutire) */
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.24);
+}
+
+.panel-header {
+  padding: 16px 20px;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #f1f5f9;
+  flex-shrink: 0;
+}
+
+.panel-header h3 {
+  margin: 0;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 700;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* --- CONTAINERUL LISTEI --- */
+.feed-container {
+  flex-grow: 1;
+  overflow-y: auto;
+  /* Spațiu interior pentru ca elementele să nu atingă marginile cardului alb */
+  padding: 15px;
+  background-color: #ffffff;
+}
+
+.feed-item {
+  display: flex;
+  align-items: flex-start;
+  padding: 12px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.feed-item:hover {
+  background-color: #f8fafc;
+}
+
+/* --- INDICATORI ȘI TEXT --- */
+
+.status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-top: 5px;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.status-indicator.critical { background-color: #ef4444; }
+.status-indicator.warning { background-color: #f59e0b; }
+
+.content {
+  flex-grow: 1;
+}
+
+.meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.id {
+  font-weight: 700;
+  font-size: 14px;
+  color: #0f172a;
+}
+
+.time {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.desc {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+.count-badge {
+  font-size: 10px;
+  color: #94a3b8;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+/* --- ANIMATIE LIVE --- */
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #22c55e;
+  position: relative;
+}
+
+.pulse-dot::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: #22c55e;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(3); opacity: 0; }
+}
