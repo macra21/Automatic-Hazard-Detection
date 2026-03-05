@@ -1,0 +1,19 @@
+<div class="modal-overlay" (click)="onClose()">
+
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h2>Detalii Risc: {{ hazard.id }}</h2>
+    <p><strong>Timp:</strong> {{ hazard.time }}</p>
+    <p><strong>Descriere:</strong> {{ hazard.description }}</p>
+
+    <div class="image-container" *ngIf="hazard.imageUrl">
+      <img [src]="hazard.imageUrl" alt="Imagine Risc">
+    </div>
+
+    <div class="actions">
+      <button class="btn-confirm" (click)="onConfirm()">Confirm</button>
+      <button class="btn-reject" (click)="onReject()">Reject</button>
+      <button class="btn-close" (click)="onClose()">Close</button>
+    </div>
+  </div>
+
+</div>
