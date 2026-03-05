@@ -1,0 +1,22 @@
+:host {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+.map-padding-container {
+  height: 100%;
+  width: 100%;
+  padding: 15px; /* Spațiu ca să se vadă marginile rotunjite */
+  box-sizing: border-box;
+}
+
+#map {
+  width: 100%; /* EXACT CUM AVEAI TU */
+  height: 100%;
+  border-radius: 20px;
+  border: 2px solid #2a354d;
+  background-color: #1e293b;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  z-index: 1;
+}

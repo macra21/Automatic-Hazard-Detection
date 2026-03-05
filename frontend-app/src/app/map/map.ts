@@ -1,20 +1,18 @@
 import { Component, AfterViewInit } from '@angular/core';
 import * as L from 'leaflet';
-// Importăm funcția cu datele hardcodate din fișierul nou creat
 import { getMarkers } from './markers';
 
 @Component({
   selector: 'app-map',
   standalone: true,
   imports: [],
-  templateUrl: './map.component.html',
-  styleUrls: ['./map.component.css']
+  templateUrl: './map.html',
+  styleUrls: ['./map.css']
 })
-export class MapComponent implements AfterViewInit {
+export class Map implements AfterViewInit {
 
   private map: L.Map | undefined;
 
-  // Coordonatele oficiale ale centrului aeroportului Oradea (ARP)
   private centroid: L.LatLngExpression = [47.023333, 21.901944];
 
   constructor() { }
@@ -49,12 +47,13 @@ export class MapComponent implements AfterViewInit {
       marker.addTo(this.map!);
 
       // Opțional: Deschidem popup-ul automat pentru primul marker critic
-      if (marker.options.title?.includes('Fisură')) {
-        marker.bindPopup(`<b>Detecție Dronă:</b> ${marker.options.title}`).openPopup();
-        marker.bindPopup(`<img src="drum_test.jpg" alt="marker" style="width:130px;">`).openPopup();      } else {
-        //aici am chestia asta momentan doar asa
-        marker.bindPopup(`<b>Info:</b> ${marker.options.title}`);
-      }
+
+        marker.bindPopup(`<div style="text-align: center">
+            <img src="drum_test.jpg" alt="marker" style="text-align:center;width: 130px">
+            <p>latitudine:47.029032 longitudine:21.903523</p></p>
+            <br>
+            </div>`).openPopup();
+
     });
   }
 }
