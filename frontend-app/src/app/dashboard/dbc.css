@@ -46,8 +46,11 @@
 
 /* --- CONTAINERUL LISTEI --- */
 .feed-container {
+  scroll-behavior: smooth;
   flex-grow: 1;
+  height: 500px;
   overflow-y: auto;
+  min-height: 0;
   /* Spațiu interior pentru ca elementele să nu atingă marginile cardului alb */
   padding: 15px;
   background-color: #ffffff;

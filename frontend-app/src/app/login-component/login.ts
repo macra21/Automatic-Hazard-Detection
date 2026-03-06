@@ -35,15 +35,19 @@ export class Login {
     const credentials = this.loginForm.getRawValue();
 
     this.dataService.login(credentials).subscribe({
-      next: (response:any) => {
-        console.log('Succes:', response);
-        this.router.navigate(['/page']);
+      next: (response: any) => {
+        console.log('Login reușit, pregătim redirect...');
+        // Ne asigurăm că am salvat (deși tap-ul din service a făcut-o deja)
+        sessionStorage.setItem('app_auth_token', 'true');
+
+        // Navigăm la /page
+        this.router.navigate(['/page']).then(success => {
+          if (!success) {
+            console.error('Navigarea a fost respinsă de Guard!');
+          }
+        });
       },
-      error: (err:any) => {
-        console.error('Eroare la login:', err);
-        // Dacă serverul e picat, err.error poate fi null, deci punem un mesaj de rezervă
-        this.errorMessage = typeof err.error === 'string' ? err.error : 'Eroare conexiune server (Java)';
-      }
+      error: (err: any) => { console.log(err.error.message) }
     });
   }
 }
