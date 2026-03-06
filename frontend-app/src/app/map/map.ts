@@ -37,11 +37,9 @@ export class Map implements AfterViewInit, OnInit {
     });
 
     // Listen for new hazards to add markers
-    this.hazardService.hazardsUpdated$.subscribe(hazards => {
-      // For now, we just log. In a real app, we would diff the list and add/remove markers.
-      // Or simply clear all and re-render (less efficient but simpler).
-      console.log('Map received updated hazards list', hazards);
-      // TODO: Implement marker update logic based on new hazards
+    this.hazardService.newHazard$.subscribe(newHazard => {
+      console.log('Map received new hazard', newHazard);
+      this.addMarkerForHazard(newHazard);
     });
   }
 
@@ -92,4 +90,26 @@ export class Map implements AfterViewInit, OnInit {
     });
   }
 
+  private addMarkerForHazard(hazard: Hazard): void {
+    if (!this.map || !hazard.coordinates) return;
+
+    const marker = new L.Marker([hazard.coordinates.lat, hazard.coordinates.lng], {
+      icon: new L.Icon({
+        iconSize: [40, 40],
+        iconAnchor: [20, 40],
+        iconUrl: 'marker.gif', // Ensure this asset exists
+      }),
+      title: hazard.description
+    });
+
+    (marker as any).hazardId = hazard.id;
+    marker.addTo(this.map!);
+    this.markersDictionary[hazard.id] = marker;
+
+    marker.on('click', () => {
+      this.zone.run(() => {
+        this.hazardService.selectHazard(hazard);
+      });
+    });
   }
+}
