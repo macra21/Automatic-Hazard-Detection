@@ -18,6 +18,7 @@ dependencies {
     // --- Spring Boot Dependencies ---
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
 
     // --- Testing Dependencies ---
@@ -33,7 +34,7 @@ dependencies {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17) // So we all use Java SDK 17
+        languageVersion = JavaLanguageVersion.of(21) // So we all use Java SDK 21
     }
 }
 

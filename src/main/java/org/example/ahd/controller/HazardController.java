@@ -1,20 +1,27 @@
 package org.example.ahd.controller;
 
 import org.example.ahd.domain.Hazard;
+import org.example.ahd.domain.HazardStatus;
+import org.example.ahd.domain.Location;
 import org.example.ahd.dto.HazardDetectionRequest;
+import org.example.ahd.dto.HazardNotificationResourceHandler;
 import org.example.ahd.exceptions.ValidationException;
 import org.example.ahd.service.HazardService;
+import org.example.ahd.utils.Observer.Observer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 
 /**
  * REST Controller for handling hazard updates.
@@ -26,15 +33,20 @@ import java.nio.file.Paths;
 @RestController
 @RequestMapping("/api/hazards")
 @CrossOrigin(origins = "*")
-public class HazardController {
+public class HazardController implements Observer {
     private final HazardService hazardService;
-
+    private final SimpMessagingTemplate messagingTemplate;
+    @Value("${file.upload-dir}")
+    private String IMAGE_DIR;
     /**
      * Constructs the HazardController with the required service.
      * @param hazardService the service handling hazard manipulation logic
+     * @param messagingTemplate the template for sending WebSocket messages
      */
-    public HazardController(HazardService hazardService) {
+    public HazardController(HazardService hazardService, SimpMessagingTemplate messagingTemplate) {
         this.hazardService = hazardService;
+        this.messagingTemplate = messagingTemplate;
+        hazardService.addObserver(this);
     }
 
     /**
@@ -64,11 +76,64 @@ public class HazardController {
             System.out.println("Label:" + detectionRequest.getLabel());
             System.out.println("Confidence: " + detectionRequest.getConfidence());
             System.out.println("Coords:" + detectionRequest.getCoord_x() + " " + detectionRequest.getCoord_y());
-            // Do something with this🙎🏿‍♂️
-            return ResponseEntity.ok("Hazard received successfully");
+
+            String imagePath = saveImage(detectionRequest.getImage());
+
+            Location location = new Location(
+                    detectionRequest.getCoord_x(),
+                    detectionRequest.getCoord_y(),
+                    null, // not available in request
+                    null, // not available in request
+                    null  // not available in request
+            );
+
+            Hazard newHazard = new Hazard(
+                    location,
+                    LocalDateTime.now(),
+                    HazardStatus.DETECTED,
+                    "Detected: " + detectionRequest.getLabel() + " with confidence: " + detectionRequest.getConfidence(),
+                    imagePath
+            );
+
+            hazardService.addHazard(newHazard);
+
+            return ResponseEntity.ok("Hazard received and saved successfully");
         } catch (Exception e){
-            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred during hazard detection: " + e.getMessage());
         }
+    }
+
+    public void sendHazardToFrontend(HazardNotificationResourceHandler hazard) {
+        messagingTemplate.convertAndSend("/topic/hazards", hazard);
+    }
+
+    @Override
+    public void doUpdate(Object object) {
+        if (object instanceof Hazard) {
+            Hazard hazard = (Hazard) object;
+            HazardNotificationResourceHandler notification = new HazardNotificationResourceHandler(hazard);
+            sendHazardToFrontend(notification);
+        }
+    }
+
+    // TODO manage to many images case(delete old images)
+    private String saveImage(MultipartFile image) throws IOException {
+        if (image == null || image.isEmpty()) {
+            return null;
+        }
+        // Create a unique filename
+        String fileName = UUID.randomUUID() + "_" + image.getOriginalFilename();
+        Path uploadPath = Paths.get(IMAGE_DIR);
+        
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+        
+        Path filePath = uploadPath.resolve(fileName);
+        // Save the file
+        Files.copy(image.getInputStream(), filePath);
+        
+        // Return the absolute path so the DTO can find it easily
+        return filePath.toAbsolutePath().toString();
     }
 }

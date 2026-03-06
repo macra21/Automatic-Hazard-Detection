@@ -25,6 +25,7 @@ public class Hazard {
     private HazardStatus status;
 
     private String description;
+    private String imagePath; // Path to the corresponding image
 
     @ManyToOne
     @JoinColumn(name = "atc_user_id")
@@ -53,12 +54,13 @@ public class Hazard {
      * @param status the {@link HazardStatus} og the hazard
      * @param description the description of the hazard
      */
-    public Hazard(Integer ID, Location location, LocalDateTime date, HazardStatus status, String description) {
+    public Hazard(Integer ID, Location location, LocalDateTime date, HazardStatus status, String description, String imagePath) {
         this.ID = ID;
         this.location = location;
         this.date = date;
         this.status = status;
         this.description = description;
+        this.imagePath = imagePath;
     }
 
     /**
@@ -75,11 +77,12 @@ public class Hazard {
      * @param status the {@link HazardStatus} og the hazard
      * @param description the description of the hazard
      */
-    public Hazard(Location location, LocalDateTime date, HazardStatus status, String description) {
+    public Hazard(Location location, LocalDateTime date, HazardStatus status, String description, String imagePath) {
         this.location = location;
         this.date = date;
         this.status = status;
         this.description = description;
+        this.imagePath = imagePath;
     }
 
     /**
@@ -192,5 +195,13 @@ public class Hazard {
      */
     public void setCleanupUser(User cleanupUser) {
         this.cleanupUser = cleanupUser;
+    }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
     }
 }

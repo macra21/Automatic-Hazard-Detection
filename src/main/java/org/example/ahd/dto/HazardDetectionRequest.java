@@ -6,8 +6,8 @@ public class HazardDetectionRequest {
     private MultipartFile image;
     private String label;
     private Float confidence;
-    private Integer coord_x;
-    private Integer coord_y;
+    private Float coord_x;
+    private Float coord_y;
 
     public MultipartFile getImage() {
         return image;
@@ -33,19 +33,19 @@ public class HazardDetectionRequest {
         this.confidence = confidence;
     }
 
-    public Integer getCoord_x() {
+    public Float getCoord_x() {
         return coord_x;
     }
 
-    public void setCoord_x(Integer coord_x) {
+    public void setCoord_x(Float coord_x) {
         this.coord_x = coord_x;
     }
 
-    public Integer getCoord_y() {
+    public Float getCoord_y() {
         return coord_y;
     }
 
-    public void setCoord_y(Integer coord_y) {
+    public void setCoord_y(Float coord_y) {
         this.coord_y = coord_y;
     }
 }
