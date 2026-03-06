@@ -7,8 +7,8 @@ import { BehaviorSubject, Subject } from 'rxjs';
 export class HazardService {
   // Move your hardcoded array here!
   private hazards: Hazard[] = [
-    {id: '004', time: '10:42 AM', description: 'Fisură Severă Pistă 1', imageUrl: 'assets/crack.jpg'},
-    {id: '003', time: '10:35 AM', description: 'FOD Pistă B (Obiect Străin)', imageUrl: 'assets/fod.jpg'},
+    {id: '004', time: '10:42 AM', description: 'Fisură Severă Pistă 1', imageUrl: 'not_yet_working.jpg'},
+    {id: '003', time: '10:35 AM', description: 'FOD Pistă B (Obiect Străin)', imageUrl: 'not_yet_working.jpg'},
     {id: '002', time: '10:30 AM', description: 'Fisură Mică Pistă 1'},
     {id: '001', time: '10:15 AM', description: 'Scurgere Combustibil - Sector C'},
   ];
