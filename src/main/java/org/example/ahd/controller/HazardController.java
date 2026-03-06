@@ -5,6 +5,7 @@ import org.example.ahd.domain.Hazard;
 import org.example.ahd.domain.HazardStatus;
 import org.example.ahd.dto.HazardDetectionRequest;
 import org.example.ahd.dto.HazardNotificationResourceHandler;
+import org.example.ahd.exceptions.DatabaseException;
 import org.example.ahd.exceptions.ValidationException;
 import org.example.ahd.service.HazardService;
 import org.example.ahd.utils.Observer.Observer;
@@ -20,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 
@@ -38,8 +40,10 @@ public class HazardController implements Observer {
     private final SimpMessagingTemplate messagingTemplate;
     @Value("${file.upload-dir}")
     private String IMAGE_DIR;
+
     /**
      * Constructs the HazardController with the required service.
+     *
      * @param hazardService the service handling hazard manipulation logic
      * @param messagingTemplate the template for sending WebSocket messages
      */
@@ -54,6 +58,7 @@ public class HazardController implements Observer {
      * <p>
      *     Receives a {@link Hazard} object, validates it, and updates hazard.
      * </p>
+     *
      * @param hazard the hazard entity to be updated
      * @return a {@link ResponseEntity} with a success message or error details
      */
@@ -64,12 +69,39 @@ public class HazardController implements Observer {
             return ResponseEntity.ok("Hazard updated successfully");
         } catch (ValidationException e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (DatabaseException e){
+            return  ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Database error: " + e.getMessage());
         }
         catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred during hazard update: " + e.getMessage());
         }
     }
 
+    /**
+     * Handles {@link Hazard} query requests by {@link HazardStatus}.
+     *
+     * @param status the status of the requested hazards.
+     * @return a {@link ResponseEntity} with a list of hazards or error details
+     */
+    @GetMapping("/getHazardListByStatus")
+    public ResponseEntity<?> getHazardsByStatus(@RequestParam HazardStatus status){
+        try{
+            List<Hazard> hazards = hazardService.findHazardsByStatus(status);
+            return ResponseEntity.ok(hazards);
+        } catch (DatabaseException e){
+            return  ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Database error: " + e.getMessage());
+        }
+        catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    /**
+     * Handles {@link HazardDetectionRequest} objects sent from the Python server.
+     *
+     * @param detectionRequest the {@link HazardDetectionRequest} that is a DTO of {@link Hazard}, but also includes the image
+     * @return a {@link ResponseEntity} with a success message or error details
+     */
     @PostMapping("/detect")
     public ResponseEntity<?> detectHazard(@ModelAttribute HazardDetectionRequest detectionRequest){
         try{
@@ -95,17 +127,33 @@ public class HazardController implements Observer {
             hazardService.addHazard(newHazard);
 
             return ResponseEntity.ok("Hazard received and saved successfully");
+        } catch (DatabaseException e){
+            return  ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Database error: " + e.getMessage());
         } catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred during hazard detection: " + e.getMessage());
         }
     }
 
+    /**
+     * Sends notifications to frontend via WebSockets.
+     * <p>
+     *     This function is automatically called when a {@link Hazard} is inserted
+     *     or modified in the database via Observer pattern.
+     * </p>
+     * @param hazard the {@link HazardDetectionRequest} that is a DTO of {@link Hazard}, but also includes the image
+     */
     public void sendHazardToFrontend(HazardNotificationResourceHandler hazard) {
         System.out.println("Sending hazard to frontend");
         messagingTemplate.convertAndSend("/topic/hazards", hazard);
         System.out.println("Hazard sent to frontend");
     }
 
+    /**
+     * <p>
+     *     Part of Observer pattern. This class is subscribed to the {@link HazardService}.
+     * </p>
+     * @param object the object to be sent to the frontend
+     */
     @Override
     public void doUpdate(Object object) {
         if (object instanceof Hazard) {
@@ -116,6 +164,12 @@ public class HazardController implements Observer {
     }
 
     // TODO manage to many images case(delete old images)
+    /**
+     * Saves an image locally from a {@link MultipartFile} and returns the path of the saved image.
+     * @param image the image to be saved
+     * @return the path of the saved image
+     * @throws IOException if the image cannot be saved
+     */
     private String saveImage(MultipartFile image) throws IOException {
         if (image == null || image.isEmpty()) {
             return null;
