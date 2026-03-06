@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RiskPopup } from '../risk-popup/risk-popup';
-
+import { HazardService } from '../hazard-service/hazard-service'; //
 export interface Hazard {
   id: string;
   time: string;
@@ -16,37 +16,41 @@ export interface Hazard {
   templateUrl: './dashboard.html',
   styleUrls: ['./dbc.css']
 })
-export class Dashboard {
-  public hazardFeed: Hazard[] = [
-    {id: '004', time: '10:42 AM', description: 'Fisură Severă Pistă 1', imageUrl: 'assets/crack.jpg'},
-    {id: '003', time: '10:35 AM', description: 'FOD Pistă B (Obiect Străin)', imageUrl: 'assets/fod.jpg'},
-    {id: '002', time: '10:30 AM', description: 'Fisură Mică Pistă 1'},
-    {id: '001', time: '10:15 AM', description: 'Scurgere Combustibil - Sector C'},
-  ];
-
+export class Dashboard implements OnInit{
+  public hazardFeed: Hazard[] = [];
   public selectedHazard: Hazard | null = null;
 
+  constructor(private hazardService: HazardService, private cdr: ChangeDetectorRef){}
+
+  ngOnInit() {
+    // 1. Load the initial list
+    this.hazardFeed = this.hazardService.getHazards();
+
+    // 2. LISTEN to the global messenger. If the Map clicks a marker, this fires!
+    this.hazardService.selectedHazard$.subscribe(hazard => {
+      console.log('Dashboard received the hazard!', hazard);
+      this.selectedHazard = hazard;
+      this.cdr.detectChanges();
+    });
+  }
+
   onSelectHazard(hazard: Hazard): void {
-    this.selectedHazard = hazard;
+    this.hazardService.selectHazard(hazard);
     console.log('Selectat:', hazard.id);
   }
 
   closePopup(): void {
-    this.selectedHazard = null;
-  }
+    this.hazardService.selectHazard(null);  }
 
-  // 5. Removed the "event: Event" parameter.
-  // We also call this.closePopup() to hide the modal after clicking.
   onConfirm(id: string): void {
-    console.log(`Trimitem la Spring: Riscul ${id} a fost CONFIRMAT`);
-    this.hazardFeed = this.hazardFeed.filter(h => h.id !== id);
+    this.hazardService.removeHazard(id);
+    this.hazardFeed = this.hazardService.getHazards();
     this.closePopup();
-    // Aici va veni: this.http.patch(...)
   }
 
   onReject(id: string): void {
-    console.log(`Trimitem la Spring: Riscul ${id} a fost RESPINS`);
-    this.hazardFeed = this.hazardFeed.filter(h => h.id !== id);
+    this.hazardService.removeHazard(id);
+    this.hazardFeed = this.hazardService.getHazards();
     this.closePopup();
   }
 }
