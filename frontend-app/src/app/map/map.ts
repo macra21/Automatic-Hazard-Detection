@@ -1,6 +1,9 @@
-import { Component, AfterViewInit } from '@angular/core';
+import {Component, AfterViewInit, NgZone, OnInit} from '@angular/core';
 import * as L from 'leaflet';
 import { getMarkers } from './markers';
+import { RiskPopup } from '../risk-popup/risk-popup';
+import { Hazard } from '../dashboard/dashboard';
+import { HazardService } from '../hazard-service/hazard-service';
 
 @Component({
   selector: 'app-map',
@@ -9,13 +12,31 @@ import { getMarkers } from './markers';
   templateUrl: './map.html',
   styleUrls: ['./map.css']
 })
-export class Map implements AfterViewInit {
+export class Map implements AfterViewInit, OnInit {
 
   private map: L.Map | undefined;
-
+  public selectedHazard: Hazard | null = null;
   private centroid: L.LatLngExpression = [47.023333, 21.901944];
 
-  constructor() { }
+  private markersDictionary: { [id: string]: L.Marker } = {};
+
+  constructor(private zone: NgZone, private hazardService: HazardService) { }
+
+  ngOnInit(): void {
+    this.hazardService.hazardRemoved$.subscribe(deletedId => {
+      // 1. Find the marker in our dictionary
+      const markerToRemove = this.markersDictionary[deletedId];
+
+      if (markerToRemove) {
+        // 2. Tell Leaflet to remove it from the map visually
+        markerToRemove.remove();
+
+        // 3. Clean it out of our dictionary
+        delete this.markersDictionary[deletedId];
+        console.log(`Marker ${deletedId} erased from the map!`);
+      }
+    });
+  }
 
   ngAfterViewInit(): void {
     this.initMap();
@@ -38,22 +59,30 @@ export class Map implements AfterViewInit {
 
   private renderHardcodedMarkers(): void {
     if (!this.map) return;
-
-    // Aplicăm logica din proiectul GitHub: preluăm array-ul și îl parcurgem
     const markers = getMarkers();
 
     markers.forEach(marker => {
-      // Adăugăm markerul pe hartă
       marker.addTo(this.map!);
 
-      // Opțional: Deschidem popup-ul automat pentru primul marker critic
+      const id = (marker as any).hazardId;
+      if (id) {
+        this.markersDictionary[id] = marker;
+      }
 
-        marker.bindPopup(`<div style="text-align: center">
-            <img src="drum_test.jpg" alt="marker" style="text-align:center;width: 130px">
-            <p>latitudine:47.029032 longitudine:21.903523</p></p>
-            <br>
-            </div>`).openPopup();
+      marker.on('click', () => {
+        this.zone.run(() => {
+          const id = (marker as any).hazardId;
+          console.log(id)
+          const foundHazard = this.hazardService.getHazardById(id);
 
+          if (foundHazard) {
+            // Tell the service to open the popup globally!
+            console.log('found');
+            this.hazardService.selectHazard(foundHazard);
+          }
+        });
+      });
     });
   }
-}
+
+  }

@@ -2,18 +2,30 @@
   <div class="panel-header">
     <span class="pulse-dot"></span>
     <h3>FEED LIVE DETECȚII</h3>
-    <span class="count-badge">4 TOTAL</span>
+    <span class="count-badge">{{ hazardFeed.length }} TOTAL</span>
   </div>
 
   <div class="feed-container">
     @for (item of hazardFeed; track item.id){
-      <div class="content">
-        <div class="meta">
-          <span class="id">Risc #{{ item.id }}</span>
-          <span class="time">{{ item.time }}</span>
-        </div>
-        <div class="desc">{{ item.description }}</div>
+    <div class="content"
+         (click)="onSelectHazard(item)"
+         [class.selected]="selectedHazard?.id === item.id">
+      <div class="meta">
+        <span class="id">Risc #{{ item.id }}</span>
+        <span class="time">{{ item.time }}</span>
       </div>
+      <div class="desc">{{ item.description }}</div>
+
+    </div>
     }
   </div>
 </div>
+
+@if (selectedHazard) {
+<app-risk-popup
+  [hazard]="selectedHazard"
+  (confirm)="onConfirm($event)"
+  (reject)="onReject($event)"
+  (close)="closePopup()">
+</app-risk-popup>
+}
