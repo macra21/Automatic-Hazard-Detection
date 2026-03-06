@@ -2,8 +2,7 @@ import {Component, AfterViewInit, NgZone, OnInit} from '@angular/core';
 import * as L from 'leaflet';
 import { getMarkers } from './markers';
 import { RiskPopup } from '../risk-popup/risk-popup';
-import { Hazard } from '../dashboard/dashboard';
-import { HazardService } from '../hazard-service/hazard-service';
+import { HazardService, Hazard } from '../hazard-service/hazard-service';
 
 @Component({
   selector: 'app-map',
@@ -35,6 +34,14 @@ export class Map implements AfterViewInit, OnInit {
         delete this.markersDictionary[deletedId];
         console.log(`Marker ${deletedId} erased from the map!`);
       }
+    });
+
+    // Listen for new hazards to add markers
+    this.hazardService.hazardsUpdated$.subscribe(hazards => {
+      // For now, we just log. In a real app, we would diff the list and add/remove markers.
+      // Or simply clear all and re-render (less efficient but simpler).
+      console.log('Map received updated hazards list', hazards);
+      // TODO: Implement marker update logic based on new hazards
     });
   }
 

@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Hazard } from '../dashboard/dashboard';
+import { Hazard } from '../hazard-service/hazard-service';
+
 @Component({
   selector: 'app-risk-popup',
   standalone: true,

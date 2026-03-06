@@ -1,13 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RiskPopup } from '../risk-popup/risk-popup';
-import { HazardService } from '../hazard-service/hazard-service'; //
-export interface Hazard {
-  id: string;
-  time: string;
-  description: string;
-  imageUrl?: string;
-}
+import { HazardService, Hazard } from '../hazard-service/hazard-service'; //
 
 @Component({
   selector: 'app-dashboard',
@@ -30,6 +24,12 @@ export class Dashboard implements OnInit{
     this.hazardService.selectedHazard$.subscribe(hazard => {
       console.log('Dashboard received the hazard!', hazard);
       this.selectedHazard = hazard;
+      this.cdr.detectChanges();
+    });
+
+    // 3. Listen for updates to the hazard list (e.g. from WebSocket)
+    this.hazardService.hazardsUpdated$.subscribe(hazards => {
+      this.hazardFeed = hazards;
       this.cdr.detectChanges();
     });
   }
