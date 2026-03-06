@@ -2,8 +2,8 @@ package org.example.ahd.service;
 
 import org.example.ahd.domain.Hazard;
 import org.example.ahd.domain.HazardStatus;
-import org.example.ahd.domain.User;
 import org.example.ahd.repository.HazardRepository;
+import org.example.ahd.utils.Observer.Observable;
 import org.example.ahd.validators.IValidator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +18,7 @@ import java.util.List;
  * </p>
  */
 @Service
-public class HazardService {
+public class HazardService extends Observable {
     private final HazardRepository hazardRepository;
     private final IValidator<Hazard> hazardValidator;
 
@@ -43,6 +43,7 @@ public class HazardService {
     public void addHazard(Hazard hazard) {
         hazardValidator.validate(hazard);
         hazardRepository.add(hazard);
+        notifyObservers(hazard);
     }
 
     /**
@@ -56,6 +57,7 @@ public class HazardService {
     public void updateHazard(Hazard hazard) {
         hazardValidator.validate(hazard);
         hazardRepository.update(hazard);
+        notifyObservers(hazard);
     }
 
     /**

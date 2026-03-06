@@ -11,8 +11,8 @@ import jakarta.persistence.MappedSuperclass;
  */
 @MappedSuperclass // It's parameters will be used by the child class(Location)
 public class Coordinates {
-    private Double latitude;
-    private Double longitude;
+    private Float latitude;
+    private Float longitude;
 
     /**
      * Constructor without arguments required by Hibernate.
@@ -24,7 +24,7 @@ public class Coordinates {
      * @param latitude the latitude
      * @param longitude the longitude
      */
-    public Coordinates(Double latitude, Double longitude) {
+    public Coordinates(Float latitude, Float longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
     }
@@ -33,7 +33,7 @@ public class Coordinates {
      * Returns the latitude of the coordinates.
      * @return the coordinates' latitude
      */
-    public Double getLatitude() {
+    public Float getLatitude() {
         return latitude;
     }
 
@@ -41,7 +41,7 @@ public class Coordinates {
      * Sets or updates the latitude of the coordinates.
      * @param latitude the new latitude of the coordinates
      */
-    public void setLatitude(Double latitude) {
+    public void setLatitude(Float latitude) {
         this.latitude = latitude;
     }
 
@@ -49,7 +49,7 @@ public class Coordinates {
      * Returns the longitude of the coordinates.
      * @return the coordinates' longitude
      */
-    public Double getLongitude() {
+    public Float getLongitude() {
         return longitude;
     }
 
@@ -57,7 +57,7 @@ public class Coordinates {
      * Sets or updates the longitude of the coordinates.
      * @param longitude the new longitude of the coordinates
      */
-    public void setLongitude(Double longitude) {
+    public void setLongitude(Float longitude) {
         this.longitude = longitude;
     }
 }

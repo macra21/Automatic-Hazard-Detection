@@ -31,7 +31,7 @@ public class Location extends Coordinates {
      * @param length the length of the box that contains the hazard
      * @param pixelTopLeft the top left pixel of the box that contains the hazard (relative to the top left (0,0)pixel of the original photo
      */
-    public Location(Double latitude, Double longitude, Double width, Double length, Double pixelTopLeft) {
+    public Location(Float latitude, Float longitude, Double width, Double length, Double pixelTopLeft) {
         super(latitude, longitude);
         this.width = width;
         this.length = length;
