@@ -17,7 +17,7 @@ public class Hazard {
     private Integer ID;
 
     @Embedded // Basically unfolds the class into separate columns within the Hazards table
-    private Location location;
+    private Coordinates coordinates;
 
     private LocalDateTime date;
 
@@ -50,13 +50,13 @@ public class Hazard {
      *     <b>Note:</b> This constructor was implemented for JDBC compatibility and is preserved for that purpose.
      * </p>
      * @param ID the unique identifier of the hazard
-     * @param location the {@link Location} information of the hazard
+     * @param coordinates the {@link Coordinates} information of the hazard
      * @param status the {@link HazardStatus} og the hazard
      * @param description the description of the hazard
      */
-    public Hazard(Integer ID, Location location, LocalDateTime date, HazardStatus status, String description, String imagePath) {
+    public Hazard(Integer ID, Coordinates coordinates, LocalDateTime date, HazardStatus status, String description, String imagePath) {
         this.ID = ID;
-        this.location = location;
+        this.coordinates = coordinates;
         this.date = date;
         this.status = status;
         this.description = description;
@@ -73,12 +73,12 @@ public class Hazard {
      * <p>
      *     <b>Note:</b> This constructor was implemented for JDBC compatibility and is preserved for that purpose.
      * </p>
-     * @param location the {@link Location} information of the hazard
+     * @param coordinates the {@link Coordinates} information of the hazard
      * @param status the {@link HazardStatus} og the hazard
      * @param description the description of the hazard
      */
-    public Hazard(Location location, LocalDateTime date, HazardStatus status, String description, String imagePath) {
-        this.location = location;
+    public Hazard(Coordinates coordinates, LocalDateTime date, HazardStatus status, String description, String imagePath) {
+        this.coordinates = coordinates;
         this.date = date;
         this.status = status;
         this.description = description;
@@ -102,19 +102,19 @@ public class Hazard {
     }
 
     /**
-     * Returns the {@link Location} of the hazard.
+     * Returns the {@link Coordinates} of the hazard.
      * @return the hazard's location
      */
-    public Location getLocation() {
-        return location;
+    public Coordinates getLocation() {
+        return coordinates;
     }
 
     /**
-     * Sets or updates the {@link Location} of the hazard.
+     * Sets or updates the {@link Coordinates} of the hazard.
      * @param location the new location of the hazard
      */
-    public void setLocation(Location location) {
-        this.location = location;
+    public void setLocation(Coordinates location) {
+        this.coordinates = location;
     }
 
     /**
