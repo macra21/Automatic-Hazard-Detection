@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Hazard } from '../dashboard/dashboard';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 @Injectable({
   providedIn: 'root' // This makes the service available everywhere in your app
 })
@@ -14,6 +14,10 @@ export class HazardService {
   ];
   private selectedHazardSource = new BehaviorSubject<Hazard | null>(null);
   public selectedHazard$ = this.selectedHazardSource.asObservable();
+
+  private hazardRemovedSource = new Subject<string>();
+  public hazardRemoved$ = this.hazardRemovedSource.asObservable();
+
   getHazards(): Hazard[] {
     return this.hazards;
   }
@@ -24,6 +28,7 @@ export class HazardService {
 
   removeHazard(id: string): void {
     this.hazards = this.hazards.filter(h => h.id !== id);
+    this.hazardRemovedSource.next(id);
   }
 
   selectHazard(hazard: Hazard | null): void {

@@ -1,4 +1,4 @@
-import {Component, AfterViewInit, NgZone} from '@angular/core';
+import {Component, AfterViewInit, NgZone, OnInit} from '@angular/core';
 import * as L from 'leaflet';
 import { getMarkers } from './markers';
 import { RiskPopup } from '../risk-popup/risk-popup';
@@ -8,17 +8,36 @@ import { HazardService } from '../hazard-service/hazard-service';
 @Component({
   selector: 'app-map',
   standalone: true,
-  imports: [RiskPopup],
+  imports: [],
   templateUrl: './map.html',
   styleUrls: ['./map.css']
 })
-export class Map implements AfterViewInit {
+export class Map implements AfterViewInit, OnInit {
 
   private map: L.Map | undefined;
   public selectedHazard: Hazard | null = null;
   private centroid: L.LatLngExpression = [47.023333, 21.901944];
 
+  private markersDictionary: { [id: string]: L.Marker } = {};
+
   constructor(private zone: NgZone, private hazardService: HazardService) { }
+
+  ngOnInit(): void {
+    this.hazardService.hazardRemoved$.subscribe(deletedId => {
+      // 1. Find the marker in our dictionary
+      const markerToRemove = this.markersDictionary[deletedId];
+
+      if (markerToRemove) {
+        // 2. Tell Leaflet to remove it from the map visually
+        markerToRemove.remove();
+
+        // 3. Clean it out of our dictionary
+        delete this.markersDictionary[deletedId];
+        console.log(`Marker ${deletedId} erased from the map!`);
+      }
+    });
+  }
+
   ngAfterViewInit(): void {
     this.initMap();
     this.renderHardcodedMarkers();
@@ -44,6 +63,11 @@ export class Map implements AfterViewInit {
 
     markers.forEach(marker => {
       marker.addTo(this.map!);
+
+      const id = (marker as any).hazardId;
+      if (id) {
+        this.markersDictionary[id] = marker;
+      }
 
       marker.on('click', () => {
         this.zone.run(() => {
