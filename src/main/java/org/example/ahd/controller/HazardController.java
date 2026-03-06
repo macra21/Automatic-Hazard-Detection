@@ -1,8 +1,8 @@
 package org.example.ahd.controller;
 
+import org.example.ahd.domain.Coordinates;
 import org.example.ahd.domain.Hazard;
 import org.example.ahd.domain.HazardStatus;
-import org.example.ahd.domain.Location;
 import org.example.ahd.dto.HazardDetectionRequest;
 import org.example.ahd.dto.HazardNotificationResourceHandler;
 import org.example.ahd.exceptions.ValidationException;
@@ -79,16 +79,13 @@ public class HazardController implements Observer {
 
             String imagePath = saveImage(detectionRequest.getImage());
 
-            Location location = new Location(
+            Coordinates coordinates = new Coordinates(
                     detectionRequest.getCoord_x(),
-                    detectionRequest.getCoord_y(),
-                    null, // not available in request
-                    null, // not available in request
-                    null  // not available in request
+                    detectionRequest.getCoord_y()
             );
 
             Hazard newHazard = new Hazard(
-                    location,
+                    coordinates,
                     LocalDateTime.now(),
                     HazardStatus.DETECTED,
                     "Detected: " + detectionRequest.getLabel() + " with confidence: " + detectionRequest.getConfidence(),
@@ -104,7 +101,9 @@ public class HazardController implements Observer {
     }
 
     public void sendHazardToFrontend(HazardNotificationResourceHandler hazard) {
+        System.out.println("Sending hazard to frontend");
         messagingTemplate.convertAndSend("/topic/hazards", hazard);
+        System.out.println("Hazard sent to frontend");
     }
 
     @Override

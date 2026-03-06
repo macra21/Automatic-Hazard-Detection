@@ -1,5 +1,6 @@
 package org.example.ahd.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.example.ahd.domain.Hazard;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -7,28 +8,41 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Base64;
 
 //TODO contains a HAzard and a MultipartFile(the image)
 public class HazardNotificationResourceHandler {
     private Hazard hazard;
+    
+    // We don't serialize the MultipartFile directly because it's an interface and has streams
+    @JsonIgnore
     private MultipartFile image;
+    
+    // Instead, we send the image content as a Base64 string or byte array
+    private String imageContent;
+    private String imageName;
+    private String imageType;
 
     public HazardNotificationResourceHandler(Hazard hazard) {
         this.hazard = hazard;
         if (hazard.getImagePath() != null) {
             try {
-                this.image = new LocalMultipartFile(Paths.get(hazard.getImagePath()));
+                Path path = Paths.get(hazard.getImagePath());
+                if (Files.exists(path)) {
+                    this.image = new LocalMultipartFile(path);
+                    this.imageName = this.image.getOriginalFilename();
+                    this.imageType = this.image.getContentType();
+                    // Convert to Base64 for JSON transmission
+                    this.imageContent = Base64.getEncoder().encodeToString(this.image.getBytes());
+                }
             } catch (IOException e) {
-                // În caz de eroare (fișier inexistent), imaginea rămâne null sau puteți loga eroarea
-                System.err.println("Nu s-a putut încărca imaginea: " + e.getMessage());
+                // Inexistent file => the image is null
+                System.err.println("Cannot load image: " + e.getMessage());
             }
         }
     }
 
-    public HazardNotificationResourceHandler(Hazard hazard, MultipartFile image){
-        this.hazard = hazard;
-        this.image = image;
-    }
+    public HazardNotificationResourceHandler() {}
 
     public Hazard getHazard() {
         return hazard;
@@ -46,7 +60,30 @@ public class HazardNotificationResourceHandler {
         this.image = image;
     }
 
-    // Implementare simplă pentru MultipartFile pentru a încărca fișiere locale
+    public String getImageContent() {
+        return imageContent;
+    }
+
+    public void setImageContent(String imageContent) {
+        this.imageContent = imageContent;
+    }
+
+    public String getImageName() {
+        return imageName;
+    }
+
+    public void setImageName(String imageName) {
+        this.imageName = imageName;
+    }
+
+    public String getImageType() {
+        return imageType;
+    }
+
+    public void setImageType(String imageType) {
+        this.imageType = imageType;
+    }
+
     private static class LocalMultipartFile implements MultipartFile {
         private final Path path;
         private final byte[] content;

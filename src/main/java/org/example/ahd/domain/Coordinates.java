@@ -1,5 +1,6 @@
 package org.example.ahd.domain;
 
+import jakarta.persistence.Embeddable;
 import jakarta.persistence.MappedSuperclass;
 
 /**
@@ -9,7 +10,7 @@ import jakarta.persistence.MappedSuperclass;
  *     Designed to be used within the {@link Location} class.
  * </p>
  */
-@MappedSuperclass // It's parameters will be used by the child class(Location)
+@Embeddable // It's parameters will be used by the child class(Location)
 public class Coordinates {
     private Float latitude;
     private Float longitude;
