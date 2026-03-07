@@ -1,5 +1,10 @@
 <div class="map-padding-container">
+  <div class="drone-control-panel">
+    <input #icaoInput type="text" placeholder="IATA Code" value="OMR" class="icao-input" />
+    <button (click)="startAirportScan(icaoInput.value)" class="scan-btn">
+      🚁 Generate Path
+    </button>
+  </div>
+
   <div id="map"></div>
 </div>
-
-

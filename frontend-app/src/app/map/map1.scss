@@ -5,10 +5,71 @@
 }
 
 .map-padding-container {
+  position: relative; /* <-- Adăugat doar asta pentru a menține panoul absolut în interior */
   height: 100%;
   width: 100%;
   padding: 15px;
   box-sizing: border-box;
+
+  /* --- ADĂUGAT: Stilurile pentru panoul dronei --- */
+  .drone-control-panel {
+    position: absolute;
+    top: 35px; /* Aliniat estetic față de marginea de sus */
+    right: 35px; /* Aliniat estetic față de marginea din dreapta */
+    z-index: 1000; /* Stă peste hartă, dar sub popup-urile Leaflet */
+    display: flex;
+    gap: 10px;
+    background-color: rgba(30, 41, 59, 0.85); /* Seamănă cu #1e293b-ul tău, dar semitransparent */
+    padding: 10px;
+    border-radius: 12px;
+    border: 1px solid #2a354d;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px); /* Efect modern de sticlă */
+
+    .icao-input {
+      width: 130px;
+      padding: 8px 12px;
+      background-color: #0f172a; /* Culoare mai închisă pentru input */
+      border: 1px solid #475569;
+      border-radius: 8px;
+      color: #f8fafc;
+      text-transform: uppercase;
+      font-weight: bold;
+      outline: none;
+      transition: border-color 0.2s;
+
+      &::placeholder {
+        color: #64748b;
+      }
+
+      &:focus {
+        border-color: #3b82f6; /* Accent albastru la focus */
+      }
+    }
+
+    .scan-btn {
+      padding: 8px 16px;
+      background-color: #3b82f6; /* Albastru modern */
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background-color 0.2s, transform 0.1s;
+
+      &:hover {
+        background-color: #2563eb;
+      }
+
+      &:active {
+        transform: scale(0.95); /* Efect de apăsare */
+      }
+    }
+  }
+  /* --- SFÂRȘIT ADĂUGĂRI --- */
 
   #map {
     width: 100%;
@@ -19,16 +80,14 @@
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
     z-index: 1;
 
-    /* --- FILTRUL DARK BLÂND --- */
+    /* --- FILTRUL DARK BLÂND (Neatins) --- */
     ::ng-deep {
-      /* Țintim straturile de fundal ale hărții, ca să nu întunecăm și marker-ele */
       .leaflet-tile-pane,
       .ol-layer,
       canvas {
-        /* 0.6 = 60% luminozitate. Este o valoare sigură. */
         filter: brightness(0.6) contrast(1.2) grayscale(0.1);
       }
     }
   }
-
 }
+
