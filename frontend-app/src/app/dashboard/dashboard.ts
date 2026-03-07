@@ -8,7 +8,7 @@ import { HazardService, Hazard } from '../hazard-service/hazard-service'; //
   standalone: true,
   imports: [CommonModule, RiskPopup],
   templateUrl: './dashboard.html',
-  styleUrls: ['./dbc.css']
+  styleUrls: ['./dbc2.scss']
 })
 export class Dashboard implements OnInit{
   public hazardFeed: Hazard[] = [];

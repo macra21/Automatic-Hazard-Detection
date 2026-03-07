@@ -7,7 +7,7 @@ import {Dashboard} from '../dashboard/dashboard';
   selector: 'app-page',
   imports: [CommonModule, Map,Dashboard],
   templateUrl: './page.html',
-  styleUrls: ['./page.css']
+  styleUrls: ['./page2.scss']
 })
 export class Page {
 

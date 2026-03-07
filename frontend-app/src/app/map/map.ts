@@ -9,7 +9,7 @@ import { HazardService, Hazard } from '../hazard-service/hazard-service';
   standalone: true,
   imports: [],
   templateUrl: './map.html',
-  styleUrls: ['./map.css']
+  styleUrls: ['./map1.scss']
 })
 export class Map implements AfterViewInit, OnInit {
 
@@ -61,10 +61,10 @@ export class Map implements AfterViewInit, OnInit {
   private initMap(): void {
     this.map = L.map('map', {
       center: this.centroid,
-      zoom: 15.48888888 // Zoom-ul ușor mărit pentru a vedea mai bine pista
+      zoom: 15.4 // Zoom-ul ușor mărit pentru a vedea mai bine pista
     });
 
-    const tiles = L.tileLayer('https://api.maptiler.com/maps/hybrid-v4/{z}/{x}/{y}.jpg?key=MCpv62w29YtAq27NFF3G', {
+    const tiles = L.tileLayer('https://api.maptiler.com/maps/outdoor-v4/{z}/{x}/{y}.png?key=MCpv62w29YtAq27NFF3G', {
       maxZoom: 18,
       minZoom: 10,
     });
