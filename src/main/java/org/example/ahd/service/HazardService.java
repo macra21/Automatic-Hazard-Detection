@@ -57,7 +57,7 @@ public class HazardService extends Observable {
     public void updateHazard(Hazard hazard) {
         hazardValidator.validate(hazard);
         hazardRepository.update(hazard);
-        notifyObservers(hazard);
+        //notifyObservers(hazard);
     }
 
     /**

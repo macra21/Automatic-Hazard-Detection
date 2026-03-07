@@ -1,7 +1,5 @@
 import {Component, AfterViewInit, NgZone, OnInit} from '@angular/core';
 import * as L from 'leaflet';
-import { getMarkers } from './markers';
-import { RiskPopup } from '../risk-popup/risk-popup';
 import { HazardService, Hazard } from '../hazard-service/hazard-service';
 
 @Component({
@@ -23,15 +21,11 @@ export class Map implements AfterViewInit, OnInit {
   constructor(private zone: NgZone, private hazardService: HazardService) { }
 
   ngOnInit(): void {
+    // Listen for removed hazards to remove markers
     this.hazardService.hazardRemoved$.subscribe(deletedId => {
-      // 1. Find the marker in our dictionary
       const markerToRemove = this.markersDictionary[deletedId];
-
       if (markerToRemove) {
-        // 2. Tell Leaflet to remove it from the map visually
         markerToRemove.remove();
-
-        // 3. Clean it out of our dictionary
         delete this.markersDictionary[deletedId];
         console.log(`Marker ${deletedId} erased from the map!`);
       }
@@ -51,11 +45,14 @@ export class Map implements AfterViewInit, OnInit {
 
   ngAfterViewInit(): void {
     this.initMap();
-    this.renderHardcodedMarkers();
 
     // Process any buffered hazards
     this.pendingHazards.forEach(h => this.addMarkerForHazard(h));
     this.pendingHazards = [];
+
+    // Also load any existing hazards from the service (in case we missed the initial load)
+    const existingHazards = this.hazardService.getHazards();
+    existingHazards.forEach(h => this.addMarkerForHazard(h));
   }
 
   private initMap(): void {
@@ -72,34 +69,6 @@ export class Map implements AfterViewInit, OnInit {
     tiles.addTo(this.map);
   }
 
-  private renderHardcodedMarkers(): void {
-    if (!this.map) return;
-    const markers = getMarkers();
-
-    markers.forEach(marker => {
-      marker.addTo(this.map!);
-
-      const id = (marker as any).hazardId;
-      if (id) {
-        this.markersDictionary[id] = marker;
-      }
-
-      marker.on('click', () => {
-        this.zone.run(() => {
-          const id = (marker as any).hazardId;
-          console.log(id)
-          const foundHazard = this.hazardService.getHazardById(id);
-
-          if (foundHazard) {
-            // Tell the service to open the popup globally!
-            console.log('found');
-            this.hazardService.selectHazard(foundHazard);
-          }
-        });
-      });
-    });
-  }
-
   private addMarkerForHazard(hazard: Hazard): void {
     if (!this.map || !hazard.coordinates) return;
 
@@ -108,8 +77,8 @@ export class Map implements AfterViewInit, OnInit {
         return;
     }
 
-    const marker = new L.Marker([hazard.coordinates.lat, hazard.coordinates.lng], {
-      icon: new L.Icon({
+    const marker = L.marker([hazard.coordinates.lat, hazard.coordinates.lng], {
+      icon: L.icon({
         iconSize: [40, 40],
         iconAnchor: [20, 40],
         iconUrl: 'marker.gif', // Ensure this asset exists
