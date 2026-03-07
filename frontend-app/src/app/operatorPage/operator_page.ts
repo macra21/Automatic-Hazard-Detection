@@ -6,10 +6,10 @@ import {Dashboard} from '../dashboard/dashboard';
 @Component({
   selector: 'app-page',
   imports: [CommonModule, Map,Dashboard],
-  templateUrl: './page.html',
+  templateUrl: './operator_page.html',
   styleUrls: ['./page2.scss']
 })
-export class Page {
+export class Operator_page {
 
   constructor() { }
 
