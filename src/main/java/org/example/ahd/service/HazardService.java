@@ -56,7 +56,9 @@ public class HazardService extends Observable {
     @Transactional
     public void updateHazard(Hazard hazard) {
         hazardValidator.validate(hazard);
-        hazardRepository.update(hazard);
+        //hazardRepository.update(hazard);
+        Hazard aux = hazardRepository.findById(hazard.getID());
+        aux.setStatus(hazard.getStatus());
         notifyObservers(hazard);
     }
 
