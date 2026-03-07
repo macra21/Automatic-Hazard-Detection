@@ -44,13 +44,13 @@ export class Dashboard implements OnInit{
     this.hazardService.selectHazard(null);  }
 
   onConfirm(id: string): void {
-    this.hazardService.removeHazard(id);
+    this.hazardService.updateHazardStatus(id, 'CONFIRMED');
     this.hazardFeed = this.hazardService.getHazards();
     this.closePopup();
   }
 
   onReject(id: string): void {
-    this.hazardService.removeHazard(id);
+    this.hazardService.updateHazardStatus(id, 'DISMISSED');
     this.hazardFeed = this.hazardService.getHazards();
     this.closePopup();
   }

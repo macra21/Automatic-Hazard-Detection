@@ -5,7 +5,7 @@ import { Hazard } from '../hazard-service/hazard-service';
 @Component({
   selector: 'app-risk-popup',
   standalone: true,
-  imports: [CommonModule, NgOptimizedImage],
+  imports: [CommonModule],
   templateUrl: './risk-popup.html', // Changed from 'template'
   styleUrls: ['./risk-popup.css']
 })
