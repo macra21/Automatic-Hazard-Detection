@@ -15,6 +15,10 @@ export class DataService {
       tap((response: any) => {
         // SETĂM ÎN SESSION STORAGE
         sessionStorage.setItem('app_auth_token', 'true');
+        // Save user details to session storage
+        if (response) {
+            sessionStorage.setItem('currentUser', JSON.stringify(response));
+        }
         console.log('Sesiune temporară creată în SessionStorage');
       })
     );
@@ -24,6 +28,11 @@ export class DataService {
   isLoggedIn(): boolean {
     const token = sessionStorage.getItem('app_auth_token');
     return token === 'true';
+  }
+
+  getCurrentUser(): any {
+      const userStr = sessionStorage.getItem('currentUser');
+      return userStr ? JSON.parse(userStr) : null;
   }
 
   // Metodă pentru Logout

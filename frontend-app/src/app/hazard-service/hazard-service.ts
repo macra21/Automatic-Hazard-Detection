@@ -3,6 +3,7 @@ import { BehaviorSubject, Subject } from 'rxjs';
 import { Client, Message } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { HttpClient } from '@angular/common/http';
+import { DataService } from '../dataService';
 
 export interface Hazard {
   id: string;
@@ -11,6 +12,7 @@ export interface Hazard {
   imageUrl?: string;
   coordinates?: { lat: number; lng: number };
   status?: string;
+  originalData?: any;
 }
 
 @Injectable({
@@ -34,7 +36,7 @@ export class HazardService {
   private stompClient: Client;
   private baseUrl = 'http://localhost:8080/api/hazards';
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private dataService: DataService) {
     this.loadInitialHazards();
 
     this.stompClient = new Client({
@@ -85,7 +87,8 @@ export class HazardService {
       description: hazardData.description || 'New Hazard Detected',
       imageUrl: imageContent ? `data:${imageType};base64,${imageContent}` : undefined,
       coordinates: hazardData.location ? { lat: hazardData.location.latitude, lng: hazardData.location.longitude } : undefined,
-      status: hazardData.status
+      status: hazardData.status,
+      originalData: hazardData
     };
   }
 
@@ -111,38 +114,47 @@ export class HazardService {
     return this.hazards.find(h => h.id === id);
   }
 
-  removeHazard(id: string): void {
-    // Optimistic update
-    const hazardToRemove = this.hazards.find(h => h.id === id);
-    if (!hazardToRemove) return;
+  updateHazardStatus(id: string, newStatus: string): void {
+    const hazardToUpdate = this.hazards.find(h => h.id === id);
+    if (!hazardToUpdate) return;
 
+    // Optimistic update: remove from list if it's no longer DETECTED (assuming we only show DETECTED)
     this.hazards = this.hazards.filter(h => h.id !== id);
     this.hazardRemovedSource.next(id);
     this.hazardsUpdatedSource.next(this.hazards);
 
-    // Send update to backend
-    // We need to send the full hazard object with updated status
-    // But we only have the frontend representation. Ideally we should fetch the full object or have a specific endpoint for status update.
-    // The controller expects a full Hazard object.
-    // Let's try to construct a minimal object that the backend might accept, or we need to change the backend to accept just ID and status.
-    // Based on the controller: updateHazard(@RequestBody Hazard hazard)
+    // Prepare payload for backend
+    // We use the original data we stored, and update the status
+    const payload = { ...hazardToUpdate.originalData };
+    payload.status = newStatus;
 
-    // Construct a payload that matches the backend Hazard structure as much as possible
-    const payload = {
-        ID: parseInt(id),
-        status: 'RESOLVED', // Or whatever status means "removed" / "processed"
-        // We might need other fields if the backend validation is strict
-        description: hazardToRemove.description,
-        // coordinates: ...
-    };
+    // Attach the current user to the payload based on their role
+    const currentUser = this.dataService.getCurrentUser();
+    if (currentUser) {
+        const userId = currentUser.id || currentUser.ID;
+        if (userId) {
+            // We only send the ID to link the user, not the full object
+            const userRef = { ID: userId };
+
+            if (currentUser.type === 'ATC') {
+                payload.atcUser = userRef;
+            } else if (currentUser.type === 'CLEANUP') {
+                payload.cleanupUser = userRef;
+            }
+        }
+    }
 
     this.http.put(`${this.baseUrl}/update`, payload).subscribe({
-        next: () => console.log(`Hazard ${id} updated successfully in backend`),
+        next: () => console.log(`Hazard ${id} status updated to ${newStatus} in backend`),
         error: (err) => {
-            console.error(`Failed to update hazard ${id} in backend`, err);
-            // Revert optimistic update if needed
+            console.error(`Failed to update hazard ${id} status in backend`, err);
+            // Ideally revert optimistic update here
         }
     });
+  }
+
+  removeHazard(id: string): void {
+      this.updateHazardStatus(id, 'DISMISSED');
   }
 
   selectHazard(hazard: Hazard | null): void {
