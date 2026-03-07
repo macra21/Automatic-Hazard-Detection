@@ -1,23 +1,39 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
-  // Prefixul definit de colegul tău în @RequestMapping
   private baseUrl = 'http://localhost:8080/api/auth';
 
   constructor(private http: HttpClient) { }
 
   login(credentials: any): Observable<any> {
-    // Aceasta va apela http://localhost:8080/api/auth/login
-    return this.http.post(`${this.baseUrl}/login`, credentials);
+    return this.http.post(`${this.baseUrl}/login`, credentials).pipe(
+      tap((response: any) => {
+        // SETĂM ÎN SESSION STORAGE
+        sessionStorage.setItem('app_auth_token', 'true');
+        console.log('Sesiune temporară creată în SessionStorage');
+      })
+    );
+  }
+
+  // Verificăm TOT în SESSION STORAGE
+  isLoggedIn(): boolean {
+    const token = sessionStorage.getItem('app_auth_token');
+    return token === 'true';
+  }
+
+  // Metodă pentru Logout
+  logout(): void {
+    sessionStorage.clear(); // Șterge sesiunea curentă
+    // Opțional, poți lăsa și localStorage.clear() dacă vrei să fii paranoic,
+    // dar sessionStorage.clear() e cel care contează acum.
   }
 
   register(user: any): Observable<any> {
-    // Aceasta va apela http://localhost:8080/api/auth/register
     return this.http.post(`${this.baseUrl}/register`, user);
   }
 }
