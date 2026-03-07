@@ -21,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.*;
@@ -86,17 +87,24 @@ public class HazardController implements Observer {
      * @param status the status of the requested hazards.
      * @return a {@link ResponseEntity} with a list of hazards or error details
      */
+    //TODO send HazardNotificationResourceHandler
     @GetMapping("/getHazardListByStatus")
-    public ResponseEntity<?> getHazardsByStatus(@RequestParam HazardStatus status){
-        try{
-            List<Hazard> hazards = hazardService.findHazardsByStatus(status);
-            return ResponseEntity.ok(hazards);
-        } catch (DatabaseException e){
-            return  ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Database error: " + e.getMessage());
-        }
-        catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
+    public CompletableFuture<ResponseEntity<?>> getHazardsByStatus(@RequestParam HazardStatus status){
+        return CompletableFuture.supplyAsync(() -> {
+            try{
+                List<Hazard> hazards = hazardService.findHazardsByStatus(status);
+                List<HazardNotificationResourceHandler> hazardNotificationResourceHandlers = new ArrayList<>();
+                for(Hazard hazard : hazards){
+                    hazardNotificationResourceHandlers.add(new HazardNotificationResourceHandler(hazard));
+                }
+                return ResponseEntity.ok(hazardNotificationResourceHandlers);
+            } catch (DatabaseException e){
+                return  ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Database error: " + e.getMessage());
+            }
+            catch (Exception e){
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            }
+        }, pool);
     }
 
     /**
@@ -159,8 +167,7 @@ public class HazardController implements Observer {
      */
     @Override
     public void doUpdate(Object object) {
-        if (object instanceof Hazard) {
-            Hazard hazard = (Hazard) object;
+        if (object instanceof Hazard hazard) {
             HazardNotificationResourceHandler notification = new HazardNotificationResourceHandler(hazard);
             sendHazardToFrontend(notification);
         }
