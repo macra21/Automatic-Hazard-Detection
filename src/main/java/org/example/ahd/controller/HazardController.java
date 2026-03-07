@@ -21,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -87,7 +88,11 @@ public class HazardController implements Observer {
     public ResponseEntity<?> getHazardsByStatus(@RequestParam HazardStatus status){
         try{
             List<Hazard> hazards = hazardService.findHazardsByStatus(status);
-            return ResponseEntity.ok(hazards);
+            List<HazardNotificationResourceHandler> hazardDtos = new ArrayList<>();
+            for(Hazard hazard : hazards){
+                hazardDtos.add(new HazardNotificationResourceHandler(hazard));
+            }
+            return ResponseEntity.ok(hazardDtos);
         } catch (DatabaseException e){
             return  ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Database error: " + e.getMessage());
         }

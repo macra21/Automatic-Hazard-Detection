@@ -1,11 +1,11 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {CommonModule, NgOptimizedImage} from '@angular/common';
 import { Hazard } from '../hazard-service/hazard-service';
 
 @Component({
   selector: 'app-risk-popup',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, NgOptimizedImage],
   templateUrl: './risk-popup.html', // Changed from 'template'
   styleUrls: ['./risk-popup.css']
 })
