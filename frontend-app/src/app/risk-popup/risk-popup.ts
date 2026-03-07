@@ -12,11 +12,31 @@ import { Hazard } from '../hazard-service/hazard-service';
 export class RiskPopup {
   // Input: Gets the current hazard from the dashboard
   @Input() hazard!: Hazard;
+  @Input() userRole: string | null = null;
 
   // Outputs: Send events back to the dashboard
   @Output() confirm = new EventEmitter<string>();
   @Output() reject = new EventEmitter<string>();
   @Output() close = new EventEmitter<void>();
+
+  // Computed properties for button labels
+  get confirmButtonLabel(): string {
+    if (this.userRole === 'ATC') {
+      return 'Confirm';
+    } else if (this.userRole === 'CLEANUP') {
+      return 'Cleared';
+    }
+    return 'Confirm';
+  }
+
+  get rejectButtonLabel(): string {
+    if (this.userRole === 'ATC') {
+      return 'Reject';
+    } else if (this.userRole === 'CLEANUP') {
+      return 'False Alarm';
+    }
+    return 'Reject';
+  }
 
   onConfirm() {
     this.confirm.emit(this.hazard.id);

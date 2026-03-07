@@ -24,6 +24,7 @@
 @if (selectedHazard) {
 <app-risk-popup
   [hazard]="selectedHazard"
+  [userRole]="userRole"
   (confirm)="onConfirm($event)"
   (reject)="onReject($event)"
   (close)="closePopup()">
