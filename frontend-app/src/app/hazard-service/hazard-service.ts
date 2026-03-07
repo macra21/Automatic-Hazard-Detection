@@ -35,8 +35,12 @@ export class HazardService {
 
   private stompClient: Client;
   private baseUrl = 'http://localhost:8080/api/hazards';
+  private userRole: string | null = null;
 
   constructor(private http: HttpClient, private dataService: DataService) {
+    this.initializeUserRole();
+    console.log('User role after initialization:', this.userRole);
+
     this.loadInitialHazards();
 
     this.stompClient = new Client({
@@ -67,16 +71,55 @@ export class HazardService {
     this.stompClient.activate();
   }
 
+  private initializeUserRole(): void {
+    const currentUser = this.dataService.getCurrentUser();
+    console.log('getCurrentUser() returned:', currentUser);
+    console.log('Type field value:', currentUser?.type);
+    if (currentUser && currentUser.type) {
+      this.userRole = currentUser.type;
+      console.log('User role initialized to:', this.userRole);
+    } else {
+      console.warn('No user role found! currentUser:', currentUser);
+    }
+  }
+
+  private getStatusBasedOnRole(): string {
+    if (this.userRole === 'ATC') {
+      console.log('Role is ATC, returning DETECTED status');
+      return 'DETECTED';
+    } else if (this.userRole === 'CLEANUP') {
+      console.log('Role is CLEANUP, returning CONFIRMED status');
+      return 'CONFIRMED';
+    }
+    console.log('No role found, defaulting to DETECTED');
+    return 'DETECTED'; // Default to DETECTED
+  }
+
   private loadInitialHazards() {
-    this.http.get<any[]>(`${this.baseUrl}/getHazardListByStatus?status=DETECTED`).subscribe({
+    const status = this.getStatusBasedOnRole();
+    console.log('===== LOADING INITIAL HAZARDS =====');
+    console.log('Current userRole:', this.userRole);
+    console.log('Loading initial hazards with status:', status);
+    const url = `${this.baseUrl}/getHazardListByStatus?status=${status}`;
+    console.log('API URL:', url);
+
+    this.http.get<any[]>(url).subscribe({
       next: (data) => {
-        console.log('Loaded initial hazards:', data);
+        console.log('===== HAZARDS LOADED SUCCESSFULLY =====');
+        console.log('Raw data from backend:', data);
+        console.log('Number of hazards received:', data ? data.length : 0);
         this.hazards = data.map(item => this.mapBackendHazardToFrontend(item.hazard, item.imageContent, item.imageType));
+        console.log('Processed hazards array:', this.hazards);
+        console.log('Processed hazards count:', this.hazards.length);
         this.hazardsUpdatedSource.next(this.hazards);
         // Also notify about new hazards so map can render them
         this.hazards.forEach(h => this.newHazardSource.next(h));
       },
-      error: (err) => console.error('Failed to load initial hazards', err)
+      error: (err) => {
+        console.error('===== ERROR LOADING HAZARDS =====');
+        console.error('Error details:', err);
+        console.error('Failed to load initial hazards with status:', status, err);
+      }
     });
   }
 
@@ -98,12 +141,20 @@ export class HazardService {
 
     const newHazard = this.mapBackendHazardToFrontend(hazardData, notification.imageContent, notification.imageType);
 
-    // Add to the beginning of the list
-    this.hazards.unshift(newHazard);
+    // Filter based on user role and status
+    const expectedStatus = this.getStatusBasedOnRole();
+    if (newHazard.status === expectedStatus) {
+      // Add to the beginning of the list
+      this.hazards.unshift(newHazard);
 
-    // Notify subscribers about the update
-    this.hazardsUpdatedSource.next(this.hazards);
-    this.newHazardSource.next(newHazard);
+      // Notify subscribers about the update
+      this.hazardsUpdatedSource.next(this.hazards);
+      this.newHazardSource.next(newHazard);
+    } else {
+      // If hazard doesn't match the expected status for this role, remove it from the list if it exists
+      this.hazards = this.hazards.filter(h => h.id !== newHazard.id);
+      this.hazardsUpdatedSource.next(this.hazards);
+    }
   }
 
   getHazards(): Hazard[] {
@@ -112,6 +163,16 @@ export class HazardService {
 
   getHazardById(id: string): Hazard | undefined {
     return this.hazards.find(h => h.id === id);
+  }
+
+  refreshHazardsBasedOnRole(): void {
+    this.initializeUserRole();
+    console.log('Refreshing hazards based on role:', this.userRole);
+    this.loadInitialHazards();
+  }
+
+  getCurrentUserRole(): string | null {
+    return this.userRole;
   }
 
   updateHazardStatus(id: string, newStatus: string): void {
