@@ -18,6 +18,7 @@ export class Map implements AfterViewInit, OnInit {
   private centroid: L.LatLngExpression = [47.023333, 21.901944];
 
   private markersDictionary: { [id: string]: L.Marker } = {};
+  private pendingHazards: Hazard[] = []; // Buffer for hazards received before map init
 
   constructor(private zone: NgZone, private hazardService: HazardService) { }
 
@@ -39,13 +40,22 @@ export class Map implements AfterViewInit, OnInit {
     // Listen for new hazards to add markers
     this.hazardService.newHazard$.subscribe(newHazard => {
       console.log('Map received new hazard', newHazard);
-      this.addMarkerForHazard(newHazard);
+      if (this.map) {
+        this.addMarkerForHazard(newHazard);
+      } else {
+        console.log('Map not ready, buffering hazard', newHazard.id);
+        this.pendingHazards.push(newHazard);
+      }
     });
   }
 
   ngAfterViewInit(): void {
     this.initMap();
     this.renderHardcodedMarkers();
+
+    // Process any buffered hazards
+    this.pendingHazards.forEach(h => this.addMarkerForHazard(h));
+    this.pendingHazards = [];
   }
 
   private initMap(): void {
@@ -92,6 +102,11 @@ export class Map implements AfterViewInit, OnInit {
 
   private addMarkerForHazard(hazard: Hazard): void {
     if (!this.map || !hazard.coordinates) return;
+
+    // Check if marker already exists to avoid duplicates
+    if (this.markersDictionary[hazard.id]) {
+        return;
+    }
 
     const marker = new L.Marker([hazard.coordinates.lat, hazard.coordinates.lng], {
       icon: new L.Icon({

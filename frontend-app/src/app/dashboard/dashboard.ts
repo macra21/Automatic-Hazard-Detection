@@ -29,7 +29,8 @@ export class Dashboard implements OnInit{
 
     // 3. Listen for updates to the hazard list (e.g. from WebSocket)
     this.hazardService.hazardsUpdated$.subscribe(hazards => {
-      this.hazardFeed = hazards;
+      console.log('Dashboard received updated hazards list', hazards);
+      this.hazardFeed = [...hazards]; // Create a new array reference to trigger change detection
       this.cdr.detectChanges();
     });
   }
