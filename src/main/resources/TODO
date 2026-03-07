@@ -5,13 +5,9 @@ TODO:
     * Tabela pentru Hazard si ResponseTime (1-n)
     * In tabela ResponseTime se da insert cand se da update la Hazard de la un status la altul(poate un trigger pt simplitate)
     * IMPORTANT: USE HikariCP for DB connection management in the final stage of the app. (Hibernate is rudimentary, but is okay for testing)
-    * Register functionality in frontend with role choosing
-    * map for saving photos locally in a directory using threads to not slowdown the app.
     * Log4j 2.0 logger (if I have the time)
-    * failed_login_attempts column in the user db better for security
-    * last_login_date column in the user db
-    * !!! to add user and hazard management controllers for frontend via rest api !!!
 DONE:
     * Add Spring plugin and dependencies.
     * Install NodeJS and configure Angular.
     * JPA(Based on Hibernate) Repository layer.
+    * add user and hazard management controllers for frontend via rest api

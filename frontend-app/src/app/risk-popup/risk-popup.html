@@ -1,12 +1,12 @@
 <div class="modal-overlay" (click)="onClose()">
 
   <div class="modal-content" (click)="$event.stopPropagation()">
-    <h2>Detalii Risc: {{ hazard.id }}</h2>
-    <p><strong>Timp:</strong> {{ hazard.time }}</p>
-    <p><strong>Descriere:</strong> {{ hazard.description }}</p>
+<!--    <h2>Detalii Risc: {{ hazard.id }}</h2>-->
+<!--    <p><strong>Timp:</strong> {{ hazard.time }}</p>-->
+<!--    <p><strong>Descriere:</strong> {{ hazard.description }}</p>-->
 
     <div class="image-container" *ngIf="hazard.imageUrl">
-      <img [src]="hazard.imageUrl" alt="Imagine Risc">
+      <img [src]="hazard.imageUrl" alt="Imagine Risc" width="300" height="200">
     </div>
 
     <div class="actions">

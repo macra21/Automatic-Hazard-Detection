@@ -19,7 +19,9 @@ public class AuthentificationService {
 
     @Transactional(readOnly = true)
     public User login(String email, String password) {
-        return userRepository.findByMailAndPassword(email, password);
+        String hashedPassword = Encryption.SHA256OneWayHash(password);
+        return userRepository.findByMailAndPassword(email, hashedPassword);
+
     }
 
     @Transactional
