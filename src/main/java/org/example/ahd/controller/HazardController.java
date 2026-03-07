@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.*;
 
 
 /**
@@ -41,7 +42,7 @@ public class HazardController implements Observer {
     private final SimpMessagingTemplate messagingTemplate;
     @Value("${file.upload-dir}")
     private String IMAGE_DIR;
-
+    ExecutorService pool;
     /**
      * Constructs the HazardController with the required service.
      *
@@ -52,6 +53,8 @@ public class HazardController implements Observer {
         this.hazardService = hazardService;
         this.messagingTemplate = messagingTemplate;
         hazardService.addObserver(this);
+        // pool = Executors.newFixedThreadPool(10);
+        pool = Executors.newVirtualThreadPerTaskExecutor();
     }
 
     /**
@@ -64,18 +67,18 @@ public class HazardController implements Observer {
      * @return a {@link ResponseEntity} with a success message or error details
      */
     @PutMapping("/update")
-    public ResponseEntity<?> updateHazard(@RequestBody Hazard hazard){
-        try{
-            hazardService.updateHazard(hazard);
-            return ResponseEntity.ok("Hazard updated successfully");
-        } catch (ValidationException e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        } catch (DatabaseException e){
-            return  ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Database error: " + e.getMessage());
-        }
-        catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred during hazard update: " + e.getMessage());
-        }
+    public CompletableFuture<ResponseEntity<?>> updateHazard(@RequestBody Hazard hazard){
+        return CompletableFuture.supplyAsync(() -> {
+            try{
+                hazardService.updateHazard(hazard);
+                return ResponseEntity.ok("Hazard updated successfully");
+            } catch (ValidationException e){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            }
+            catch (Exception e){
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred during hazard update: " + e.getMessage());
+            }
+        }, pool);
     }
 
     /**
@@ -84,21 +87,24 @@ public class HazardController implements Observer {
      * @param status the status of the requested hazards.
      * @return a {@link ResponseEntity} with a list of hazards or error details
      */
+    //TODO send HazardNotificationResourceHandler
     @GetMapping("/getHazardListByStatus")
-    public ResponseEntity<?> getHazardsByStatus(@RequestParam HazardStatus status){
-        try{
-            List<Hazard> hazards = hazardService.findHazardsByStatus(status);
-            List<HazardNotificationResourceHandler> hazardDtos = new ArrayList<>();
-            for(Hazard hazard : hazards){
-                hazardDtos.add(new HazardNotificationResourceHandler(hazard));
+    public CompletableFuture<ResponseEntity<?>> getHazardsByStatus(@RequestParam HazardStatus status){
+        return CompletableFuture.supplyAsync(() -> {
+            try{
+                List<Hazard> hazards = hazardService.findHazardsByStatus(status);
+                List<HazardNotificationResourceHandler> hazardNotificationResourceHandlers = new ArrayList<>();
+                for(Hazard hazard : hazards){
+                    hazardNotificationResourceHandlers.add(new HazardNotificationResourceHandler(hazard));
+                }
+                return ResponseEntity.ok(hazardNotificationResourceHandlers);
+            } catch (DatabaseException e){
+                return  ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Database error: " + e.getMessage());
             }
-            return ResponseEntity.ok(hazardDtos);
-        } catch (DatabaseException e){
-            return  ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Database error: " + e.getMessage());
-        }
-        catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
+            catch (Exception e){
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            }
+        }, pool);
     }
 
     /**
@@ -108,35 +114,35 @@ public class HazardController implements Observer {
      * @return a {@link ResponseEntity} with a success message or error details
      */
     @PostMapping("/detect")
-    public ResponseEntity<?> detectHazard(@ModelAttribute HazardDetectionRequest detectionRequest){
-        try{
-            System.out.println("Label:" + detectionRequest.getLabel());
-            System.out.println("Confidence: " + detectionRequest.getConfidence());
-            System.out.println("Coords:" + detectionRequest.getCoord_x() + " " + detectionRequest.getCoord_y());
+    public CompletableFuture<ResponseEntity<?>> detectHazard(@ModelAttribute HazardDetectionRequest detectionRequest){
+        return CompletableFuture.supplyAsync(() -> {
+            try{
+                System.out.println("Label:" + detectionRequest.getLabel());
+                System.out.println("Confidence: " + detectionRequest.getConfidence());
+                System.out.println("Coords:" + detectionRequest.getCoord_x() + " " + detectionRequest.getCoord_y());
 
-            String imagePath = saveImage(detectionRequest.getImage());
+                String imagePath = saveImage(detectionRequest.getImage());
 
-            Coordinates coordinates = new Coordinates(
-                    detectionRequest.getCoord_x(),
-                    detectionRequest.getCoord_y()
-            );
+                Coordinates coordinates = new Coordinates(
+                        detectionRequest.getCoord_x(),
+                        detectionRequest.getCoord_y()
+                );
 
-            Hazard newHazard = new Hazard(
-                    coordinates,
-                    LocalDateTime.now(),
-                    HazardStatus.DETECTED,
-                    "Detected: " + detectionRequest.getLabel() + " with confidence: " + detectionRequest.getConfidence(),
-                    imagePath
-            );
+                Hazard newHazard = new Hazard(
+                        coordinates,
+                        LocalDateTime.now(),
+                        HazardStatus.DETECTED,
+                        "Detected: " + detectionRequest.getLabel() + " with confidence: " + detectionRequest.getConfidence(),
+                        imagePath
+                );
 
-            hazardService.addHazard(newHazard);
+                hazardService.addHazard(newHazard);
 
-            return ResponseEntity.ok("Hazard received and saved successfully");
-        } catch (DatabaseException e){
-            return  ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Database error: " + e.getMessage());
-        } catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred during hazard detection: " + e.getMessage());
-        }
+                return ResponseEntity.ok("Hazard received and saved successfully");
+            } catch (Exception e){
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred during hazard detection: " + e.getMessage());
+            }
+        }, pool);
     }
 
     /**
@@ -148,9 +154,9 @@ public class HazardController implements Observer {
      * @param hazard the {@link HazardDetectionRequest} that is a DTO of {@link Hazard}, but also includes the image
      */
     public void sendHazardToFrontend(HazardNotificationResourceHandler hazard) {
-        System.out.println("Sending hazard to frontend");
-        messagingTemplate.convertAndSend("/topic/hazards", hazard);
-        System.out.println("Hazard sent to frontend");
+        CompletableFuture.runAsync(() -> {
+            messagingTemplate.convertAndSend("/topic/hazards", hazard);
+        }, pool);
     }
 
     /**
@@ -161,37 +167,28 @@ public class HazardController implements Observer {
      */
     @Override
     public void doUpdate(Object object) {
-        if (object instanceof Hazard) {
-            Hazard hazard = (Hazard) object;
+        if (object instanceof Hazard hazard) {
             HazardNotificationResourceHandler notification = new HazardNotificationResourceHandler(hazard);
             sendHazardToFrontend(notification);
         }
     }
 
     // TODO manage to many images case(delete old images)
-    /**
-     * Saves an image locally from a {@link MultipartFile} and returns the path of the saved image.
-     * @param image the image to be saved
-     * @return the path of the saved image
-     * @throws IOException if the image cannot be saved
-     */
+    //TODO Thread this shit
     private String saveImage(MultipartFile image) throws IOException {
         if (image == null || image.isEmpty()) {
             return null;
         }
-        // Create a unique filename
         String fileName = UUID.randomUUID() + "_" + image.getOriginalFilename();
         Path uploadPath = Paths.get(IMAGE_DIR);
-        
+
         if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);
         }
-        
+
         Path filePath = uploadPath.resolve(fileName);
-        // Save the file
         Files.copy(image.getInputStream(), filePath);
-        
-        // Return the absolute path so the DTO can find it easily
+
         return filePath.toAbsolutePath().toString();
     }
 }
