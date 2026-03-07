@@ -1,7 +1,7 @@
 <div class="dashboard-panel">
   <div class="panel-header">
     <span class="pulse-dot"></span>
-    <h3>FEED LIVE DETECȚII</h3>
+    <h3>FEED LIVE DETECTIONS</h3>
     <span class="count-badge">{{ hazardFeed.length }} TOTAL</span>
   </div>
 
@@ -11,7 +11,7 @@
          (click)="onSelectHazard(item)"
          [class.selected]="selectedHazard?.id === item.id">
       <div class="meta">
-        <span class="id">Risc #{{ item.id }}</span>
+        <span class="id">Risk #{{ item.id }}</span>
         <span class="time">{{ item.time }}</span>
       </div>
       <div class="desc">{{ item.description }}</div>
