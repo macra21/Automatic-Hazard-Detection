@@ -10,7 +10,4 @@ public class Main {
         System.out.println(Encryption.SHA256OneWayHash("1234"));
         SpringApplication.run(Main.class, args);
     }
-
-    // test
-
 }
