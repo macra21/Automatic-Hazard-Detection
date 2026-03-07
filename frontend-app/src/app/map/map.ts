@@ -2,8 +2,7 @@ import {Component, AfterViewInit, NgZone, OnInit} from '@angular/core';
 import * as L from 'leaflet';
 import { getMarkers } from './markers';
 import { RiskPopup } from '../risk-popup/risk-popup';
-import { Hazard } from '../dashboard/dashboard';
-import { HazardService } from '../hazard-service/hazard-service';
+import { HazardService, Hazard } from '../hazard-service/hazard-service';
 
 @Component({
   selector: 'app-map',
@@ -19,6 +18,7 @@ export class Map implements AfterViewInit, OnInit {
   private centroid: L.LatLngExpression = [47.023333, 21.901944];
 
   private markersDictionary: { [id: string]: L.Marker } = {};
+  private pendingHazards: Hazard[] = []; // Buffer for hazards received before map init
 
   constructor(private zone: NgZone, private hazardService: HazardService) { }
 
@@ -36,11 +36,26 @@ export class Map implements AfterViewInit, OnInit {
         console.log(`Marker ${deletedId} erased from the map!`);
       }
     });
+
+    // Listen for new hazards to add markers
+    this.hazardService.newHazard$.subscribe(newHazard => {
+      console.log('Map received new hazard', newHazard);
+      if (this.map) {
+        this.addMarkerForHazard(newHazard);
+      } else {
+        console.log('Map not ready, buffering hazard', newHazard.id);
+        this.pendingHazards.push(newHazard);
+      }
+    });
   }
 
   ngAfterViewInit(): void {
     this.initMap();
     this.renderHardcodedMarkers();
+
+    // Process any buffered hazards
+    this.pendingHazards.forEach(h => this.addMarkerForHazard(h));
+    this.pendingHazards = [];
   }
 
   private initMap(): void {
@@ -85,4 +100,31 @@ export class Map implements AfterViewInit, OnInit {
     });
   }
 
+  private addMarkerForHazard(hazard: Hazard): void {
+    if (!this.map || !hazard.coordinates) return;
+
+    // Check if marker already exists to avoid duplicates
+    if (this.markersDictionary[hazard.id]) {
+        return;
+    }
+
+    const marker = new L.Marker([hazard.coordinates.lat, hazard.coordinates.lng], {
+      icon: new L.Icon({
+        iconSize: [40, 40],
+        iconAnchor: [20, 40],
+        iconUrl: 'marker.gif', // Ensure this asset exists
+      }),
+      title: hazard.description
+    });
+
+    (marker as any).hazardId = hazard.id;
+    marker.addTo(this.map!);
+    this.markersDictionary[hazard.id] = marker;
+
+    marker.on('click', () => {
+      this.zone.run(() => {
+        this.hazardService.selectHazard(hazard);
+      });
+    });
   }
+}
