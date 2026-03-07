@@ -69,7 +69,7 @@ export class HazardService {
     this.http.get<any[]>(`${this.baseUrl}/getHazardListByStatus?status=DETECTED`).subscribe({
       next: (data) => {
         console.log('Loaded initial hazards:', data);
-        this.hazards = data.map(h => this.mapBackendHazardToFrontend(h));
+        this.hazards = data.map(item => this.mapBackendHazardToFrontend(item.hazard, item.imageContent, item.imageType));
         this.hazardsUpdatedSource.next(this.hazards);
         // Also notify about new hazards so map can render them
         this.hazards.forEach(h => this.newHazardSource.next(h));
