@@ -1,0 +1,34 @@
+:host {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+.map-padding-container {
+  height: 100%;
+  width: 100%;
+  padding: 15px;
+  box-sizing: border-box;
+
+  #map {
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    border: 2px solid #2a354d;
+    background-color: #1e293b;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    z-index: 1;
+
+    /* --- FILTRUL DARK BLÂND --- */
+    ::ng-deep {
+      /* Țintim straturile de fundal ale hărții, ca să nu întunecăm și marker-ele */
+      .leaflet-tile-pane,
+      .ol-layer,
+      canvas {
+        /* 0.6 = 60% luminozitate. Este o valoare sigură. */
+        filter: brightness(0.6) contrast(1.2) grayscale(0.1);
+      }
+    }
+  }
+
+}

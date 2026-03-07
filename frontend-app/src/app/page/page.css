@@ -18,6 +18,7 @@ header {
   border-bottom: 1px solid #334155;
   background-color: #1e293b;
   flex-shrink: 0; /* Previne micșorarea header-ului */
+  z-index: 1000; /* Asigură că header-ul stă deasupra hărții */
 }
 
 header img { height: 50px; margin-right: 20px; }
@@ -39,6 +40,7 @@ header img { height: 50px; margin-right: 20px; }
   flex: 1; /* Harta ia tot spațiul rămas disponibil */
   height: 100%;
   position: relative;
+  z-index: 1; /* Stabilește un context de stacking mai mic decât header-ul */
 }
 
 .right-side {
