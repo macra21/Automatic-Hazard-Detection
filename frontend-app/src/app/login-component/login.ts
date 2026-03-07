@@ -40,12 +40,23 @@ export class Login {
         // Ne asigurăm că am salvat (deși tap-ul din service a făcut-o deja)
         sessionStorage.setItem('app_auth_token', 'true');
 
-        // Navigăm la /page
-        this.router.navigate(['/page']).then(success => {
+        const userRole = response.type // sau response.type, în funcție de ce îți vine de la backend
+
+        if (userRole === 'ATC') {
+          this.router.navigate(['/operatorPage']);
+        } else if (userRole === 'CLEANUP') {
+          this.router.navigate(['/maintenancePage']); // pune aici ruta corectă pentru cleanup
+        } else {
+          console.error('Rol invalid:', userRole);
+        }
+
+        /*// Navigăm la /page
+        this.router.navigate(['/operatorPage']).then(success => {
           if (!success) {
             console.error('Navigarea a fost respinsă de Guard!');
           }
         });
+         */
       },
       error: (err: any) => { console.log(err.error.message) }
     });

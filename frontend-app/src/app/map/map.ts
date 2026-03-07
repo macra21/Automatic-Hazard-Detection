@@ -13,7 +13,7 @@ export class Map implements AfterViewInit, OnInit {
 
   private map: L.Map | undefined;
   public selectedHazard: Hazard | null = null;
-  private centroid: L.LatLngExpression = [47.023333, 21.901944];
+  private centroid: L.LatLngExpression = [47.023875, 21.901898];
 
   private markersDictionary: { [id: string]: L.Marker } = {};
   private pendingHazards: Hazard[] = []; // Buffer for hazards received before map init

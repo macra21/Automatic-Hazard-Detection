@@ -7,7 +7,7 @@ import { Hazard } from '../hazard-service/hazard-service';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './risk-popup.html', // Changed from 'template'
-  styleUrls: ['./risk-popup.css']
+  styleUrls: ['./risk-popup2.scss']
 })
 export class RiskPopup {
   // Input: Gets the current hazard from the dashboard
