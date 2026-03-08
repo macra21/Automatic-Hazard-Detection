@@ -25,7 +25,7 @@ public class DatabaseInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         try (Connection connection = dataSource.getConnection()) {
-            ScriptUtils.executeSqlScript(connection, new ClassPathResource("sql/CreateResponseTimeTable.sql"));
+            //ScriptUtils.executeSqlScript(connection, new ClassPathResource("sql/CreateResponseTimeTable.sql"));
 
             // Used jdbcTemplate because ScriptUtils splits the script by semicolons and fails to run them
 

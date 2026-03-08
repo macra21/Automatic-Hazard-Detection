@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 /**
  * Represents the Hazard entity within the application domain.
  * Includes basic information such as an unique identifier,
- * {@link Location} information, date and time of
+ * {@link Coordinates} information, date and time of
  * the discovery{@link HazardStatus} and a short description.
  */
 @Entity
