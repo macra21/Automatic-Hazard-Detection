@@ -5,6 +5,7 @@ import {Operator_page} from './operatorPage/operator_page';
 import { Dashboard } from './dashboard/dashboard';
 import {authGuard} from './auth-guard';
 import {MaintenancePage} from './maintenancePage/maintenance_page';
+import {AdminStatsComponent} from './adminPage/admin_page'
 
 export const routes: Routes = [
   {
@@ -26,4 +27,8 @@ export const routes: Routes = [
     component:MaintenancePage,
     canActivate: [authGuard]
   },
+  {
+    path: 'adminPage',
+    component:AdminStatsComponent,
+  }
 ];

@@ -1,0 +1,30 @@
+<div class="dashboard-panel">
+  <div class="panel-header">
+    <span class="pulse-dot"></span>
+    <h3>STATISTICI SISTEM</h3>
+    <span class="count-badge">{{ statsList.length }} TOTAL</span>
+  </div>
+
+  <div class="feed-container">
+    @for (stat of statsList; track stat.id) {
+      <div class="content">
+
+        <div class="meta">
+          <span class="id">Ref #{{ stat.id }}</span>
+          <span class="time">{{ stat.date }}</span>
+        </div>
+
+        <div class="stat-info">
+          <strong>{{ stat.name }}</strong>: {{ stat.value }}
+        </div>
+
+        <div class="desc">{{ stat.description }}</div>
+
+      </div>
+    } @empty {
+      <div class="content empty-message">
+        Nu există statistici înregistrate.
+      </div>
+    }
+  </div>
+</div>
