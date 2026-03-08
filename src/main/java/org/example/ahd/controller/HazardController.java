@@ -53,8 +53,8 @@ public class HazardController implements Observer {
         this.hazardService = hazardService;
         this.messagingTemplate = messagingTemplate;
         hazardService.addObserver(this);
-        // pool = Executors.newFixedThreadPool(10);
-        pool = Executors.newVirtualThreadPerTaskExecutor();
+        pool = Executors.newFixedThreadPool(10);
+        // pool = Executors.newVirtualThreadPerTaskExecutor();
     }
 
     /**
@@ -102,7 +102,7 @@ public class HazardController implements Observer {
                 return  ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Database error: " + e.getMessage());
             }
             catch (Exception e){
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurrcd .ed during hazard fetching by status: " + e.getMessage());
             }
         }, pool);
     }
