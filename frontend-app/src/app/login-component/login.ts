@@ -13,7 +13,7 @@ import { CommonModule } from '@angular/common'; // Obligatoriu pentru *ngIf in s
   styleUrls: ['./login.css'],
 })
 export class Login {
-  // Folosim non-null assertion (!) sau valori default ca să nu urle TS
+  
   loginForm = new FormGroup({
     email: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.email] }),
     password: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
